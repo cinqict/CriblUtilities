@@ -13,3 +13,6 @@ To do this we will make:
   - login and update admin password (default is `admin` and `admin`)
 - `pip install -r requirements.txt`
 - `python example_usage.py`
+
+## Cleanup
+- `docker compose down`
