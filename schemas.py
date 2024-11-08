@@ -1,4 +1,4 @@
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, field_validator
 
 
 class BaseSchema(BaseModel):
@@ -30,8 +30,9 @@ class InputSchema(BaseSchema):
 
 
 class ConnectionSchema(BaseSchema):
+    id: str | None = None
     connection_type: str
-    customizedJdbcUrl: str
+    customizedJdbcUrl: str | None = None
     database: str
     disabled: int
     host: str
@@ -40,4 +41,4 @@ class ConnectionSchema(BaseSchema):
     localTimezoneConversionEnabled: bool
     port: int
     readonly: bool
-    timezone: str
+    timezone: str | None = None

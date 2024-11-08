@@ -2,3 +2,4 @@ pydantic
 typer
 requests
 tomli
+python-dotenv
