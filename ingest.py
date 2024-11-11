@@ -97,3 +97,4 @@ class Ingestor:
             )
             for i in self.connection
         ]
+        
