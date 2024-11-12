@@ -2,7 +2,7 @@ from pydantic import BaseModel
 from schemas import AuthenticationSchema, ConnectionSchema, InputSchema
 import tomli
 import re
-from rest_utilities import get_cribl_authentication_token, post_new_database_connection
+from rest_utilities import get_cribl_authentication_token, post_new_database_connection, post_new_input
 from uuid import uuid4
 
 
@@ -96,5 +96,20 @@ class Ingestor:
                 payload=i.model_dump_json(),
             )
             for i in self.connection
+        ]
+
+    def post_inputs(
+        self,
+        base_url: str = "http://localhost:19000",
+        cribl_workergroup_name: str = "default",
+    ) -> list[dict]:
+        return [
+            post_new_input(
+                base_url=base_url,
+                cribl_authtoken=self.token,
+                cribl_workergroup_name=cribl_workergroup_name,
+                payload=i.model_dump_json(),
+            )
+            for i in self.input
         ]
         
