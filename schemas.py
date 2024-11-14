@@ -2,7 +2,7 @@ from pydantic import BaseModel, ConfigDict, Field
 from typing import List, Optional
 
 class BaseSchema(BaseModel):
-    model_config = ConfigDict(
+    model_examples = ConfigDict(
         # alias_generator=to_camel,
         populate_by_name=True,
     )
@@ -42,7 +42,7 @@ class InputSchema(BaseModel):
     type: Optional[str] = "collection"
     schedule: Schedule
     collector: Collector
-    input: InputType
+    input : InputType
     id: Optional[str]
 
 

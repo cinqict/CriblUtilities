@@ -6,7 +6,7 @@ from rest_utilities import get_cribl_authentication_token, post_new_database_con
 from uuid import uuid4
 
 
-def load_config(files: list) -> list[BaseModel]:
+def load_examples(files: list) -> list[BaseModel]:
     """Load TOML files and validate it against a Pydantic schema.
 
     Parameters
@@ -47,41 +47,41 @@ def load_config(files: list) -> list[BaseModel]:
 class Ingestor:
     def __init__(
         self,
-        config_folder: str = "config",
+        examples_folder: str = "examples",
     ):
         self.transformed_input_data = None
-        self.config_folder = config_folder
-        self.authentication = None
+        self.examples_folder = examples_folder
+        self.identities = None
         self.connection = None
         self.input = None
 
     def __str__(self):
-        return f"Authentication: {self.authentication}\nConnection: {self.connection}\nInput: {self.input}"
+        return f"Authentication: {self.identities}\nConnection: {self.connection}\nInput: {self.input}"
 
     def get_cribl_authtoken(self, base_url: str = "http://localhost:19000") -> str:
         self.token = get_cribl_authentication_token(base_url=base_url)
 
     def transform_input(self, file_names: list | None = None):
         if file_names and file_names[0]:
-            path1 = f"{self.config_folder}/{file_names[0]}"
+            path1 = f"{self.examples_folder}/{file_names[0]}"
         else:
-            path1 = f"{self.config_folder}/inputs.conf"
+            path1 = f"{self.examples_folder}/db_inputs.conf"
         if file_names and file_names[1]:
-            path2 = f"{self.config_folder}/{file_names[1]}"
+            path2 = f"{self.examples_folder}/{file_names[1]}"
         else:
-            path2 = f"{self.config_folder}/connections.conf"
+            path2 = f"{self.examples_folder}/db_connections.conf"
 
         paths = [path1, path2]
 
-        tomli_inputs, tomli_connections = load_config(files = paths)
+        tomli_db_inputs, tomli_db_connections = load_examples(files = paths)
 
         merged_data = {}
-        dict_inputs = dict(tomli_inputs)
-        dict_connections = dict(tomli_connections)
+        dict_db_inputs = dict(tomli_db_inputs)
+        dict_db_connections = dict(tomli_db_connections)
 
-        for key, input_value in dict_inputs.items():
+        for key, input_value in dict_db_inputs.items():
             connection_key = input_value.get("connection")
-            connection_data = dict_connections.get(connection_key, {})
+            connection_data = dict_db_connections.get(connection_key, {})
             merged_data[key] = {**input_value, **connection_data}
 
         # Transform values in "disabled" entry
@@ -135,32 +135,32 @@ class Ingestor:
 
         return self.input
 
-    def load_authentication(
+    def load_identities(
         self, file_name: str | None = None
     ) -> list[BaseModel] | None:
         if file_name:
-            path = f"{self.config_folder}/{file_name}"
+            path = f"{self.examples_folder}/{file_name}"
         else:
-            path = f"{self.config_folder}/authentication.conf"
-        self.authentication = load_config(
+            path = f"{self.examples_folder}/identities.conf"
+        self.identities = load_examples(
             file=path,
             schema=AuthenticationSchema,
         )
-        return self.authentication
+        return self.identities
 
     def load_connection(self, file_name: str | None = None) -> list[BaseModel] | None:
         if file_name:
-            path = f"{self.config_folder}/{file_name}"
+            path = f"{self.examples_folder}/{file_name}"
         else:
-            path = f"{self.config_folder}/connections.conf"
-        self.connection = load_config(
+            path = f"{self.examples_folder}/db_connections.conf"
+        self.connection = load_examples(
             file=path,
             schema=ConnectionSchema,
         )
         return self.connection
 
 
-    def post_connections(
+    def post_db_connections(
         self,
         base_url: str = "http://localhost:19000",
         cribl_workergroup_name: str = "default",
@@ -175,7 +175,7 @@ class Ingestor:
             for i in self.connection
         ]
 
-    def post_inputs(
+    def post_db_inputs(
         self,
         base_url: str = "http://localhost:19000",
         cribl_workergroup_name: str = "default",
