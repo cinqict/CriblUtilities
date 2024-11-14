@@ -4,52 +4,83 @@ import tomli
 import re
 from rest_utilities import get_cribl_authentication_token, post_new_database_connection, post_new_input
 from uuid import uuid4
+from typing import List, Tuple, Dict, Any
 
 
-def load_examples(files: list) -> list[BaseModel]:
-    """Load TOML files and validate it against a Pydantic schema.
+def load_input_examples(files: List[str]) -> tuple[object, object]:
+    """
+    Load and parse two TOML files, returning the contents as dictionaries.
 
     Parameters
     ----------
-    file : list
-        The path to the TOML files.
+    files : list
+        A list containing two file paths to TOML files.
 
     Returns
     -------
-    dict_items1, dict_items2: dictionary items
-        Two dictionaries with the data from the TOML files
-
+    dict
+        A tuple containing two dictionaries with the parsed data from each TOML file.
     """
-    # with open(files) as f:
-    #     tmp = f.read()
-    #     # .conf files aren't exactly TOML, so we need to format it a bit
-    #     # first before we can load it
-    #     tmp_formatted = re.sub(r"(\s*=\s*)(.*)", r"\1'\2'", tmp)
-    #     return [
-    #         schema(**row, id=f"{key}-{uuid4()}") for key, row in tomli.loads(tmp_formatted).items()
-    #     ]
 
+    def load_and_format_db_inputs_toml(file_path: str) -> object:
+        with open(file_path) as f:
+            tmp = f.read()
+            transformed_lines = []
+            multiline_query = False
+            for line in tmp.split('\n'):
+                line = re.sub(r"\s*=\s*", " = ", line)
+                if 'query' in line:
+                    if '\\' in line:
+                        query_content = line.split('query = ')[1].rstrip("\\").strip()
+                        # Append the modified 'query' line with triple quotes
+                        transformed_lines.append("query = '''")
+                        # Append the original content on a new line
+                        transformed_lines.append(query_content)
+                        multiline_query = True
+                    else:
+                        # Add other lines as they are
+                        transformed_lines.append(line)
+                        multiline_query = False
 
-    with open(files[0]) as f:
-        tmp = f.read()
-        # .conf files aren't exactly TOML, so we need to format it a bit
-        # first before we can load it
-        tmp_formatted = re.sub(r"(\s*=\s*)(.*)", r"\1'\2'", tmp)
-        dict_items1 = tomli.loads(tmp_formatted).items()
+                elif multiline_query == True and '\\' in line:
+                    transformed_lines.append(line)
+                    multiline_query = True
 
-    with open(files[1]) as f:
-        tmp = f.read()
-        tmp_formatted = re.sub(r"(\s*=\s*)(.*)", r"\1'\2'", tmp)
-        dict_items2 = tomli.loads(tmp_formatted).items()
+                elif multiline_query == True and '\\' not in line:
+                    transformed_lines.append(line)
+                    transformed_lines.append("'''")
+                    multiline_query = False
+                else:
+                    transformed_lines.append(line)
+
+        transformed_text = "\n".join(transformed_lines)
+        text = transformed_text.strip()
+        # Wrap the text with triple double quotes, starting and ending on a new line
+        formatted_text = f"""\n{text}\n"""
+        tmp = re.sub(r"\\\n", "\n", formatted_text)
+        tmp = re.sub(r"(\s*=\s*)(.*)", r"\1'\2'", tmp)
+        tomli_db_inputs = tomli.loads(tmp).items()
+        return tomli_db_inputs
+
+    def load_and_format_db_connections(file_path: str) -> object:
+        with open(file_path) as f:
+            tmp = f.read()
+            tmp_formatted = re.sub(r"(\s*=\s*)(.*)", r"\1'\2'", tmp)
+            tomli_db_connections = tomli.loads(tmp_formatted).items()
+        return tomli_db_connections
+
+    # Load and parse each file
+    dict_items1 = load_and_format_db_inputs_toml(files[0])
+    dict_items2 = load_and_format_db_connections(files[1])
 
     return dict_items1, dict_items2
+
 
 class Ingestor:
     def __init__(
         self,
         examples_folder: str = "examples",
     ):
-        self.transformed_input_data = None
         self.examples_folder = examples_folder
         self.identities = None
         self.connection = None
@@ -61,7 +92,8 @@ class Ingestor:
     def get_cribl_authtoken(self, base_url: str = "http://localhost:19000") -> str:
         self.token = get_cribl_authentication_token(base_url=base_url)
 
-    def transform_input(self, file_names: list | None = None):
+
+    def merge_examples_input(self, file_names: list | None = None):
         if file_names and file_names[0]:
             path1 = f"{self.examples_folder}/{file_names[0]}"
         else:
@@ -73,7 +105,7 @@ class Ingestor:
 
         paths = [path1, path2]
 
-        tomli_db_inputs, tomli_db_connections = load_examples(files = paths)
+        tomli_db_inputs, tomli_db_connections = load_input_examples(files=paths)
 
         merged_data = {}
         dict_db_inputs = dict(tomli_db_inputs)
@@ -97,20 +129,20 @@ class Ingestor:
                         sub_dict['disabled'] = True
             return data
 
-        self.transformed_input_data = transform_disabled_values(merged_data).items()
+        merged_input_data = transform_disabled_values(merged_data).items()
 
-        return self.transformed_input_data
+        return merged_input_data
 
-
-    def load_input(self) -> list[BaseModel] | None:
+    def load_input(self, file_names: list | None = None) -> list[BaseModel] | None:
         def create_metadata(data):
             return [
                 Metadata(name="host", value=data["host"]),
                 Metadata(name="index", value=data["index"]),
-                Metadata(name="source", value=data["source"]),
+                Metadata(name="source", value=data.get("source", "")),
                 Metadata(name="sourcetype", value=data["sourcetype"])
             ]
 
+        merged_data = self.merge_examples_input(file_names)
         # Parsing tomli_input to create InputSchema instances
         self.input = [
             InputSchema(
@@ -130,10 +162,14 @@ class Ingestor:
                 ),
                 id=f"{key}-{uuid4()}"
             )
-            for key, row in self.transformed_input_data
+            for key, row in merged_data
         ]
 
         return self.input
+
+
+
+
 
     def load_identities(
         self, file_name: str | None = None
@@ -142,10 +178,7 @@ class Ingestor:
             path = f"{self.examples_folder}/{file_name}"
         else:
             path = f"{self.examples_folder}/identities.conf"
-        self.identities = load_examples(
-            file=path,
-            schema=AuthenticationSchema,
-        )
+        self.identities = load_input_examples()
         return self.identities
 
     def load_connection(self, file_name: str | None = None) -> list[BaseModel] | None:
@@ -153,10 +186,7 @@ class Ingestor:
             path = f"{self.examples_folder}/{file_name}"
         else:
             path = f"{self.examples_folder}/db_connections.conf"
-        self.connection = load_examples(
-            file=path,
-            schema=ConnectionSchema,
-        )
+        self.connection = load_input_examples()
         return self.connection
 
 

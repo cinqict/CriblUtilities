@@ -2,7 +2,7 @@ from pydantic import BaseModel, ConfigDict, Field
 from typing import List, Optional
 
 class BaseSchema(BaseModel):
-    model_examples = ConfigDict(
+    model_config = ConfigDict(
         # alias_generator=to_camel,
         populate_by_name=True,
     )

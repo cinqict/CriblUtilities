@@ -5,9 +5,9 @@ from ingest import Ingestor
 local_ingestor = Ingestor()
 # %%
 _ = local_ingestor.get_cribl_authtoken()
-data_merged = local_ingestor.transform_input()
-print(data_merged)
+
 db_inputs = local_ingestor.load_input()
 print(db_inputs)
 response_db_inputs = local_ingestor.post_db_inputs()
 print(response_db_inputs)
+print(local_ingestor.input[0].model_dump_json())
