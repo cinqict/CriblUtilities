@@ -6,7 +6,7 @@ import tomli
 from pydantic import BaseModel
 
 from rest_utilities import get_cribl_authentication_token, post_new_database_connection, post_new_input
-from schemas import InputSchema, Metadata, Schedule, Collector, CollectorConf, Run, InputType
+from schemas import InputSchema, Metadata, Schedule, Collector, CollectorConf, Run, InputType, ConnectionSchema
 
 
 def load_examples(files: List[str]) -> tuple[object, object]:
@@ -259,6 +259,121 @@ class Ingestor:
             )
             for i in self.input
         ]
+
+    def merge_examples_connections(self, file_names: list | None = None) -> object:
+        if file_names and file_names[0]:
+            path1 = f"{self.examples_folder}/{file_names[0]}"
+        else:
+            path1 = f"{self.examples_folder}/identities.conf"
+        if file_names and file_names[1]:
+            path2 = f"{self.examples_folder}/{file_names[1]}"
+        else:
+            path2 = f"{self.examples_folder}/db_connections.conf"
+
+        paths = [path1, path2]
+
+        tomli_db_identities, tomli_db_connections = load_examples(files=paths)
+
+        merged_data = {}
+        dict_db_identities = dict(tomli_db_identities)
+        dict_db_connections = dict(tomli_db_connections)
+
+        for key, input_value in dict_db_connections.items():
+            identity_key = input_value.get("identity")
+            identity_data = dict_db_identities.get(identity_key, {})
+            merged_data[key] = {**input_value, **identity_data}
+
+        def cribl_databaseType(merged_data: dict) -> dict:
+            """
+            Transform the values of the 'connection_type' key in the merged_data dictionary.
+
+            Parameters
+            ----------
+            merged_data : dict
+                The dictionary containing the merged data with 'connection_type' keys.
+
+            Returns
+            -------
+            dict
+                The transformed dictionary with updated 'connection_type' values.
+            """
+            connection_type_mapping = {
+                'oracle_service': 'oracle',
+                'oracle': 'oracle',
+                'mssql_jtds_win_auth': 'sqlserver',
+                'generic_mssql': 'sqlserver',
+                'db2': '-not supported yet-',
+                'postgres': 'postgres',
+                'sybase_ase': '-not supported yet-',
+                'vertica': '-not supported yet-'
+            }
+
+            for key, sub_dict in merged_data.items():
+                if 'connection_type' in sub_dict:
+                    original_type = sub_dict['connection_type']
+                    sub_dict['connection_type'] = connection_type_mapping.get(original_type, original_type)
+
+            return merged_data
+
+        def cribl_connectionString(merged_data: dict) -> dict:
+            """
+            Transform the values of the 'customizedJdbcUrl' key in the merged_data dictionary.
+            If not available, this needs to be drafted using parameters (in curly brackets) available:
+            jdbc:{connection_type}://{host}:{port};encrypt={jdbcUseSSL};user={username};password={password};
+
+            Parameters
+            ----------
+            merged_data : dict
+                The dictionary containing the merged data with 'customizedJdbcUrl' keys.
+
+            Returns
+            -------
+            dict
+                The transformed dictionary with updated 'customizedJdbcUrl' values.
+            """
+            for key, sub_dict in merged_data.items():
+                if 'customizedJdbcUrl' not in sub_dict:
+                    connection_type = sub_dict.get('connection_type', '')
+                    host = sub_dict.get('host', '')
+                    port = sub_dict.get('port', '')
+                    jdbcUseSSL = sub_dict.get('jdbcUseSSL', '')
+                    username = sub_dict.get('username', '')
+                    password = sub_dict.get('password', '')
+                    sub_dict['customizedJdbcUrl'] = (
+                        f"jdbc:{connection_type}://{host}:{port};"
+                        f"encrypt={jdbcUseSSL};user={username};password={password};"
+                    )
+            return merged_data
+
+        merged_connections_data = cribl_databaseType(merged_data)
+        merged_connections_data = cribl_connectionString(merged_connections_data).items()
+
+        return merged_connections_data
+    def load_connections(self, file_names: list | None = None) -> list[BaseModel] | None:
+        merged_data = self.merge_examples_connections(file_names)
+        connections_obj = [
+            ConnectionSchema(
+                id=f"{key}-{uuid4()}",
+                databaseType=row.get('connection_type'),
+                username=row.get('username'),
+                password=row.get('password'),
+                connectionString=row.get('customizedJdbcUrl'),
+                database=row.get('database'),
+                disabled=row.get('disabled'),
+                host=row.get('host'),
+                identity=row.get('identity'),
+                jdbcUseSSL=row.get('jdbcUseSSL'),
+                localTimezoneConversionEnabled=row.get('localTimezoneConversionEnabled'),
+                port=row.get('port'),
+                readonly=row.get('readonly'),
+                timezone=row.get('timezone')
+            )
+            for key, row in merged_data
+        ]
+
+        self.connection = connections_obj
+
+        return self.connection
 
     def post_db_connections(
             self,

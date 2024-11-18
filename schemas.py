@@ -47,15 +47,17 @@ class InputSchema(BaseModel):
 
 
 class ConnectionSchema(BaseSchema):
-    id: str | None = None
-    connection_type: str
-    customizedJdbcUrl: str | None = None
+    id: Optional[str]
+    databaseType: str = Field(alias='connection_type')
+    username: str
+    password: str
+    connectionString: str = Field(alias='customizedJdbcUrl')
     database: str
     disabled: int
     host: str
     identity: str
     jdbcUseSSL: bool
-    localTimezoneConversionEnabled: bool
+    localTimezoneConversionEnabled: Optional[bool]
     port: int
-    readonly: bool
-    timezone: str | None = None
+    readonly: Optional[bool]
+    timezone: Optional[str]
