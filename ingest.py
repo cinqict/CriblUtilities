@@ -76,7 +76,7 @@ class Ingestor:
     def __str__(self):
         return f"Authentication: {self.identities}\nConnection: {self.connection}\nInput: {self.input}"
 
-    def get_cribl_authtoken(self, base_url: str = "http://localhost:19000") -> str:
+    def get_cribl_authtoken(self, base_url: str = "http://localhost:19000") -> None:
         self.token = get_cribl_authentication_token(base_url=base_url)
 
     def merge_examples_input(self, file_names: list | None = None) -> object:
