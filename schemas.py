@@ -42,22 +42,27 @@ class InputSchema(BaseModel):
     type: Optional[str] = "collection"
     schedule: Schedule
     collector: Collector
-    input : InputType
+    input: InputType
     id: Optional[str]
 
 
-class ConnectionSchema(BaseSchema):
+class ConnectionSchema(BaseModel):
+    class Config:
+        extra = 'ignore'
+
     id: Optional[str]
-    databaseType: str = Field(alias='connection_type')
+    databaseType: Optional[str]
     username: str
     password: str
-    connectionString: str = Field(alias='customizedJdbcUrl')
     database: str
     disabled: int
     host: str
     identity: str
     jdbcUseSSL: bool
+    connectionString: Optional[str] = Field(default=None, exclude_none=True)
+    configObj: Optional[dict] = Field(default=None, exclude_none=True)
     localTimezoneConversionEnabled: Optional[bool]
     port: int
     readonly: Optional[bool]
     timezone: Optional[str]
+    authType: str

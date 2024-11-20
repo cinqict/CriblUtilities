@@ -6,7 +6,7 @@ from dotenv import load_dotenv, find_dotenv
 _ = load_dotenv(find_dotenv())
 
 
-def get_cribl_authentication_token(base_url: str = "http://localhost:19000") -> str:
+def get_cribl_authentication_token(base_url: str = os.environ["BASE_URL"]) -> str:
     """Returns the auth token for the Cribl instance.
 
     Parameters
@@ -35,10 +35,10 @@ def get_cribl_authentication_token(base_url: str = "http://localhost:19000") -> 
 
 
 def post_new_database_connection(
-    base_url: str = "http://localhost:19000",
+    base_url: str = os.environ["BASE_URL"],
     payload: dict = {},
     cribl_authtoken: str = "",
-    cribl_workergroup_name: str = "",
+    cribl_workergroup_name: str = os.environ["CRIBL_WORKERGROUP_NAME"],
 ) -> dict:
     """Posts a new database connection to the Cribl instance.
 
@@ -71,10 +71,10 @@ def post_new_database_connection(
     return response.json()
 
 def post_new_input(
-    base_url: str = "http://localhost:19000",
+    base_url: str = os.environ["BASE_URL"],
     payload: dict = {},
     cribl_authtoken: str = "",
-    cribl_workergroup_name: str = "",
+    cribl_workergroup_name: str = os.environ["CRIBL_WORKERGROUP_NAME"],
 ) -> dict:
     """Posts a new input to the Cribl instance.
 

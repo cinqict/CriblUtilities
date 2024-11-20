@@ -1,6 +1,7 @@
 import re
+import os
 from uuid import uuid4
-from typing import List
+from typing import List, Optional, Union
 
 import tomli
 from pydantic import BaseModel
@@ -76,7 +77,7 @@ class Ingestor:
     def __str__(self):
         return f"Authentication: {self.identities}\nConnection: {self.connection}\nInput: {self.input}"
 
-    def get_cribl_authtoken(self, base_url: str = "http://localhost:19000") -> None:
+    def get_cribl_authtoken(self, base_url: str = os.environ["BASE_URL"]) -> None:
         self.token = get_cribl_authentication_token(base_url=base_url)
 
     def merge_examples_input(self, file_names: list | None = None) -> object:
@@ -247,8 +248,8 @@ class Ingestor:
 
     def post_db_inputs(
             self,
-            base_url: str = "http://localhost:19000",
-            cribl_workergroup_name: str = "default",
+            base_url: str = os.environ["BASE_URL"],
+            cribl_workergroup_name: str = os.environ["CRIBL_WORKERGROUP_NAME"],
     ) -> list[dict]:
         return [
             post_new_input(
@@ -302,10 +303,10 @@ class Ingestor:
                 'oracle': 'oracle',
                 'mssql_jtds_win_auth': 'sqlserver',
                 'generic_mssql': 'sqlserver',
-                'db2': '-not supported yet-',
+                'db2': None,#'-not supported yet-',
                 'postgres': 'postgres',
-                'sybase_ase': '-not supported yet-',
-                'vertica': '-not supported yet-'
+                'sybase_ase': None,#'-not supported yet-',
+                'vertica': None#'-not supported yet-'
             }
 
             for key, sub_dict in merged_data.items():
@@ -315,61 +316,85 @@ class Ingestor:
 
             return merged_data
 
-        def cribl_connectionString(merged_data: dict) -> dict:
-            """
-            Transform the values of the 'customizedJdbcUrl' key in the merged_data dictionary.
-            If not available, this needs to be drafted using parameters (in curly brackets) available:
-            jdbc:{connection_type}://{host}:{port};encrypt={jdbcUseSSL};user={username};password={password};
-
-            Parameters
-            ----------
-            merged_data : dict
-                The dictionary containing the merged data with 'customizedJdbcUrl' keys.
-
-            Returns
-            -------
-            dict
-                The transformed dictionary with updated 'customizedJdbcUrl' values.
-            """
+        def cribl_connectionString_configObj(merged_data: dict) -> dict:
             for key, sub_dict in merged_data.items():
-                if 'customizedJdbcUrl' not in sub_dict:
-                    connection_type = sub_dict.get('connection_type', '')
-                    host = sub_dict.get('host', '')
-                    port = sub_dict.get('port', '')
-                    jdbcUseSSL = sub_dict.get('jdbcUseSSL', '')
-                    username = sub_dict.get('username', '')
-                    password = sub_dict.get('password', '')
-                    sub_dict['customizedJdbcUrl'] = (
-                        f"jdbc:{connection_type}://{host}:{port};"
-                        f"encrypt={jdbcUseSSL};user={username};password={password};"
-                    )
+                if sub_dict['connection_type'] == 'mssql_jdts_win_auth':
+                    configobj = {
+                        "authentication": {
+                            "type": "ntlm",
+                            "options": {
+                                "userName": sub_dict['username'],
+                                "password": sub_dict['password'],
+                                "domain": sub_dict['domain']
+                            }
+                        },
+                        "options": {
+                            "connectTimeout": 15000,
+                            "trustServerCertificate": True
+                        },
+                        "connectionTimeout": 15000,
+                        "port": sub_dict['port'],
+                        "server": f"{os.environ['BASE_URL']}/api/v1/m/{os.environ['CRIBL_WORKERGROUP_NAME']}/lib/database-connections",
+                        "database": sub_dict['database']
+                    }
+                    sub_dict['configObj'] = configobj
+                    del sub_dict['customizedJdbcUrl']
+                else:
+                    if 'customizedJdbcUrl' not in sub_dict:
+                        connection_type = sub_dict.get('connection_type', '')
+                        host = sub_dict.get('host', '')
+                        port = sub_dict.get('port', '')
+                        jdbcUseSSL = sub_dict.get('jdbcUseSSL', '')
+                        username = sub_dict.get('username', '')
+                        password = sub_dict.get('password', '')
+                        sub_dict['customizedJdbcUrl'] = (
+                            f"jdbc:{connection_type}://{host}:{port};"
+                            f"encrypt={jdbcUseSSL};user={username};password={password};"
+                        )
+            return merged_data
+
+        def authType(merged_data: dict) -> dict:
+            # If connection_type = mssql_jdts_win_auth fill this with configObj
+            # else fill with connectionString.
+            for key, sub_dict in merged_data.items():
+                if sub_dict['connection_type'] == 'mssql_jdts_win_auth':
+                    sub_dict['authType'] = 'configObj'
+                else:
+                    sub_dict['authType'] = 'connectionString'
+
             return merged_data
 
         merged_connections_data = cribl_databaseType(merged_data)
-        merged_connections_data = cribl_connectionString(merged_connections_data).items()
+        merged_connections_data = cribl_connectionString_configObj(merged_connections_data)
+        merged_connections_data = authType(merged_connections_data).items()
 
         return merged_connections_data
     def load_connections(self, file_names: list | None = None) -> list[BaseModel] | None:
-        merged_data = self.merge_examples_connections(file_names)
-        connections_obj = [
-            ConnectionSchema(
-                id=f"{key}-{uuid4()}",
-                databaseType=row.get('connection_type'),
-                username=row.get('username'),
-                password=row.get('password'),
-                connectionString=row.get('customizedJdbcUrl'),
-                database=row.get('database'),
-                disabled=row.get('disabled'),
-                host=row.get('host'),
-                identity=row.get('identity'),
-                jdbcUseSSL=row.get('jdbcUseSSL'),
-                localTimezoneConversionEnabled=row.get('localTimezoneConversionEnabled'),
-                port=row.get('port'),
-                readonly=row.get('readonly'),
-                timezone=row.get('timezone')
-            )
-            for key, row in merged_data
-        ]
+        merged_data= self.merge_examples_connections(file_names)
+        connections_obj = []
+
+        for key, row in merged_data:
+            connection_data = {
+                "id": f"{key}-{uuid4()}",
+                "databaseType": row.get('connection_type'),
+                "username": row.get('username'),
+                "password": row.get('password'),
+                "database": row.get('database'),
+                "disabled": row.get('disabled'),
+                "host": row.get('host'),
+                "identity": row.get('identity'),
+                "jdbcUseSSL": row.get('jdbcUseSSL'),
+                "localTimezoneConversionEnabled": row.get('localTimezoneConversionEnabled'),
+                "port": row.get('port'),
+                "readonly": row.get('readonly'),
+                "timezone": row.get('timezone'),
+                "authType": row.get('authType')
+            }
+            if 'configObj' in row:
+                connection_data['configObj'] = row.get('configObj')
+            if 'customizedJdbcUrl' in row:
+                connection_data['connectionString'] = row.get('customizedJdbcUrl')
+            connections_obj.append(ConnectionSchema(**connection_data))
 
         self.connection = connections_obj
 
@@ -377,8 +402,8 @@ class Ingestor:
 
     def post_db_connections(
             self,
-            base_url: str = "http://localhost:19000",
-            cribl_workergroup_name: str = "default",
+            base_url: str = os.environ["BASE_URL"],
+            cribl_workergroup_name: str = os.environ["CRIBL_WORKERGROUP_NAME"],
     ) -> list[dict]:
         return [
             post_new_database_connection(
