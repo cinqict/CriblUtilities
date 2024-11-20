@@ -9,20 +9,12 @@ else:
     # Now we can use the Ingestor class to load the examples files
     local_ingestor = Ingestor()
     # %%
-    #_ = local_ingestor.load_input()
     _ = local_ingestor.get_cribl_authtoken()
-    # print(local_ingestor)
     # %%
-    # print(local_ingestor.connection[0].model_dump_json())
-    # print(local_ingestor.token)
-    # print('local_ingestor.connection[0].model_dump_json()   ',local_ingestor.connection[0].model_dump_json())
-    # print('local_ingestor.connection  ',local_ingestor.connection)
-    # print('local_ingestor.input[0].model_dump_json()   ',local_ingestor.input[0].model_dump_json())
-    # print('local_ingestor.input  ',local_ingestor.input)
+    inputs = local_ingestor.load_input()
+    response_inputs = local_ingestor.post_db_inputs()
+    print('RESPONSE INPUTS API: ', response_inputs)
     # %%
-    connections_data = local_ingestor.merge_examples_connections()
-    #print(connections_data)
-    _ = local_ingestor.load_connections()
-    # print(_)
-    response = local_ingestor.post_db_connections()
-    print('RESPONSE: ', response)
+    connections = local_ingestor.load_connections()
+    response_connections = local_ingestor.post_db_connections()
+    print('RESPONSE CONNECTIONS API: ', response_connections)
