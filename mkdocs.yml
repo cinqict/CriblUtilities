@@ -1,0 +1,9 @@
+site_name: Splunk to Cribl
+
+nav:
+  - Home: ../README.md
+  - Mapping: Mapping API Cribl.md
+  - TODOS: TODOS.md
+
+theme:
+  name: mkdocs

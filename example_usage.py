@@ -1,29 +1,20 @@
 # %%
 from ingest import Ingestor
+import sys
+# %%
 
-# %%
-# Now we can use the Ingestor class to load the configuration files
-local_ingestor = Ingestor(config_folder="examples")
-# %%
-_ = local_ingestor.load_identities()
-_ = local_ingestor.load_db_connections()
-_ = local_ingestor.load_db_inputs()
-# this will not run if you do not have a local cribl instance running
-# _ = local_ingestor.get_cribl_authtoken()
-
-# %%
-# string representation of the ingestor object
-# in the background, the __str__ method is called
-print(local_ingestor)
-
-# %%
-# example db connection payload
-print(local_ingestor.db_connections[0].model_dump_json(indent=2))
-
-# %%
-# example db input payload
-print(local_ingestor.db_inputs[0].model_dump_json(indent=2))
-
-# %%
-# example identity payload
-print(local_ingestor.identities[0].model_dump_json(indent=2))
+if sys.version_info < (3, 10):
+    raise RuntimeError("This project requires Python 3.10 or higher.")
+else:
+    # Now we can use the Ingestor class to load the examples files
+    local_ingestor = Ingestor()
+    # %%
+    _ = local_ingestor.get_cribl_authtoken()
+    # %%
+    inputs = local_ingestor.load_input()
+    response_inputs = local_ingestor.post_db_inputs()
+    print('RESPONSE INPUTS API: ', response_inputs)
+    # %%
+    connections = local_ingestor.load_connections()
+    response_connections = local_ingestor.post_db_connections()
+    print('RESPONSE CONNECTIONS API: ', response_connections)

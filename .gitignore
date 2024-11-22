@@ -77,7 +77,6 @@ target/
 
 # Jupyter Notebook
 .ipynb_checkpoints
-
 # IPython
 profile_default/
 ipython_config.py
@@ -163,3 +162,5 @@ cython_debug/
 
 scratch*
 .env
+test.py
+drafts.ipynb
