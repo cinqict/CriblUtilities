@@ -41,7 +41,7 @@ from rest_utilities import get_cribl_authentication_token, post_new_database_con
 from schemas import InputSchema, Metadata, Schedule, Collector, CollectorConf, Run, InputType, ConnectionSchema
 
 
-def load_examples(files: List[str]) -> tuple[object, object]:
+def load_examples(files: List[str]) -> tuple[dict, dict]:
     """
     Load and parse two TOML files, returning the contents as dictionaries.
 
@@ -56,14 +56,13 @@ def load_examples(files: List[str]) -> tuple[object, object]:
         A tuple containing two dictionaries with the parsed data from each TOML file.
     """
 
-    def load_and_format(file_path: str) -> object:
+    def load_and_format(file_path: str) -> dict:
         with open(file_path) as f:
             tmp = f.read()
             tmp = re.sub(r"\\\n", " ", tmp)
             tmp_formatted = re.sub(r"(\s*=\s*)(.*)", r"\1'''\2'''", tmp)
-            tomli_db_inputs = tomli.loads(tmp_formatted).items()
+            tomli_db_inputs = dict(tomli.loads(tmp_formatted).items())
         return tomli_db_inputs
-
 
     # Load and parse each file
     dict_items1 = load_and_format(files[0])
@@ -90,7 +89,10 @@ def is_cron_format(value: str) -> bool:
         return False
 
     # Cron schedule regex: Matches standard cron patterns
-    cron_regex = r'^(\*|([0-5]?\d)) (\*|([01]?\d|2[0-3])) (\*|([0-2]?\d)) (\*|([1-7]))$|^@(?:yearly|annually|monthly|weekly|daily|hourly)$'
+    cron_regex = (
+        r'^(\*|([0-5]?\d)) (\*|([01]?\d|2[0-3])) (\*|([0-2]?\d)) (\*|([1-7]))$|'
+        r'^@(?:yearly|annually|monthly|weekly|daily|hourly)$'
+    )
 
     return bool(re.match(cron_regex, value.strip()))
 
@@ -102,6 +104,7 @@ class Ingestor:
     ):
         self.examples_folder = examples_folder
         self.identities = None
+        self.token = None
         self.connection = None
         self.input = None
 
@@ -111,13 +114,14 @@ class Ingestor:
     def get_cribl_authtoken(self, base_url: str = os.environ["BASE_URL"]) -> None:
         self.token = get_cribl_authentication_token(base_url=base_url)
 
-    def merge_examples_input(self, file_names: list | None = None) -> object:
+    def merge_examples_input(self, file_names: list | None = None) -> dict:
         """
 
         Parameters
         ----------
         file_names : list
-            A list containing two file names to be merged. The first file should contain the input data, and the second file should contain the connection data.
+            A list containing two file names to be merged. The first file should contain the input data,
+            and the second file should contain the connection data.
 
         Returns
         -------
@@ -152,16 +156,17 @@ class Ingestor:
             """
             Transform values in "disabled" entry according to provided table in Mapping API Cribl
             """
-            for key, sub_dict in data.items():
-                if 'disabled' in sub_dict:
-                    value = sub_dict['disabled']
+            for trans_key, trans_sub_dict in data.items():
+                if 'disabled' in trans_sub_dict:
+                    value = trans_sub_dict['disabled']
                     if isinstance(value, str):
                         value = value.lower()
                     if value in ['true', 1, True, '1']:
-                        sub_dict['disabled'] = False
+                        trans_sub_dict['disabled'] = False
                     elif value in ['false', 0, False, '0']:
-                        sub_dict['disabled'] = True
+                        trans_sub_dict['disabled'] = True
             return data
+
         def seconds_to_cron(seconds: int) -> str:
             """
             Transforms a given time in seconds to a cron schedule.
@@ -188,9 +193,9 @@ class Ingestor:
                 days = seconds // 86400
                 return f"0 0 */{days} * *"
 
-        merged_input_data = transform_disabled_values(merged_data).items()
+        merged_input_data = transform_disabled_values(merged_data)
 
-        for key, sub_dict in merged_input_data:
+        for key, sub_dict in merged_input_data.items():
             interval = sub_dict.get('interval')
             if interval and not is_cron_format(interval):
                 try:
@@ -207,7 +212,8 @@ class Ingestor:
         Parameters
         ----------
         file_names: list
-            A list containing two file names to be merged. The first file should contain the input data, and the second file should contain the connection data.
+            A list containing two file names to be merged. The first file should contain the input data,
+            and the second file should contain the connection data.
 
         Returns
         -------
@@ -229,10 +235,10 @@ class Ingestor:
 
             """
             return [
-                Metadata(name="host", value=data.get("host","")),
-                Metadata(name="index", value=data.get("index","")),
+                Metadata(name="host", value=data.get("host", "")),
+                Metadata(name="index", value=data.get("index", "")),
                 Metadata(name="source", value=data.get("source", "")),
-                Metadata(name="sourcetype", value=data.get("sourcetype",""))
+                Metadata(name="sourcetype", value=data.get("sourcetype", ""))
             ]
 
         merged_data = self.merge_examples_input(file_names)
@@ -253,11 +259,13 @@ class Ingestor:
                 input=InputType(
                     metadata=create_metadata(row)
                 ),
-                id=f"{key}-{uuid4()}"
-            )
-            for key, row in merged_data
+                id=(
+                    f"{os.environ['DBCOLL_PREFIX'] + '-' if os.environ['DBCOLL_PREFIX'] else ''}"
+                    f"{key}-"
+                    f"{uuid4() if os.environ['DBCOLL_SUFFIX'] == '{guid}' else os.environ['DBCOLL_SUFFIX']}"
+                ))
+            for key, row in merged_data.items()
         ]
-
 
         def transform_to_js_expression(query: str) -> str:
             """
@@ -292,20 +300,19 @@ class Ingestor:
             for i in self.input
         ]
 
-    def merge_examples_connections(self, file_names: list | None = None) -> object:
+    def merge_examples_connections(self, file_names: list | None = None) -> dict:
         """
         Merge the examples files containing the identities and connections data.
         Parameters
         ----------
         file_names : list
-            A list containing two file names to be merged. The first file should contain the identities data, and the second file should contain the connections data.
-        file_names
+            A list containing two file names to be merged. The first file should contain the identities data, 
+            and the second file should contain the connections' data.
 
         Returns
         -------
         merged_connections_data : dict
             A dictionary containing the merged data from the two files.
-
         """
         if file_names and file_names[0]:
             path1 = f"{self.examples_folder}/{file_names[0]}"
@@ -329,7 +336,7 @@ class Ingestor:
             identity_data = dict_db_identities.get(identity_key, {})
             merged_data[key] = {**input_value, **identity_data}
 
-        def cribl_connectionString_configObj(merged_data: dict) -> dict:
+        def cribl_connectionstring_configobj(data: dict) -> dict:
             """
             Transform the connection data to include a properly formatted `configObj` or `customizedJdbcUrl`.
 
@@ -340,7 +347,7 @@ class Ingestor:
 
             Parameters
             ----------
-            merged_data : dict
+            data : dict
                 The dictionary containing the merged connection data.
 
             Returns
@@ -348,15 +355,15 @@ class Ingestor:
             dict
                 The updated dictionary with `configObj` or `customizedJdbcUrl` added to each connection entry.
             """
-            for key, sub_dict in merged_data.items():
-                if sub_dict['connection_type'] == 'mssql_jtds_win_auth':
+            for conn_key, conn_sub_dict in data.items():
+                if conn_sub_dict['connection_type'] == 'mssql_jtds_win_auth':
                     configobj = {
                         "authentication": {
                             "type": "ntlm",
                             "options": {
-                                "userName": sub_dict['username'],
-                                "password": sub_dict['password'],
-                                "domain": sub_dict.get('domain','')
+                                "userName": conn_sub_dict['username'],
+                                "password": conn_sub_dict['password'],
+                                "domain": conn_sub_dict.get('domain_name', '')
                             }
                         },
                         "options": {
@@ -364,44 +371,48 @@ class Ingestor:
                             "trustServerCertificate": True
                         },
                         "connectionTimeout": 15000,
-                        "port": sub_dict['port'],
-                        "server": f"{os.environ['BASE_URL']}/api/v1/m/{os.environ['CRIBL_WORKERGROUP_NAME']}/lib/database-connections",
-                        "database": sub_dict['database']
-                    }
-                    sub_dict['configObj'] = configobj
-                    sub_dict.pop('customizedJdbcUrl', None)
-                else:
-                    if 'customizedJdbcUrl' not in sub_dict:
-                        connection_type = sub_dict.get('connection_type', '')
-                        host = sub_dict.get('host', '')
-                        port = sub_dict.get('port', '')
-                        jdbcUseSSL = sub_dict.get('jdbcUseSSL', '')
-                        username = sub_dict.get('username', '')
-                        password = sub_dict.get('password', '')
-                        sub_dict['customizedJdbcUrl'] = (
-                            f"jdbc:{connection_type}://{host}:{port};"
-                            f"encrypt={jdbcUseSSL};user={username};password={password};"
-                        )
-            return merged_data
+                        "port": conn_sub_dict['port'],
+                        "server": (
+                            f"{os.environ['BASE_URL']}/api/v1/m/"
+                            f"{os.environ['CRIBL_WORKERGROUP_NAME']}/lib/database-connections"
+                        ),
 
-        def authType(merged_data: dict) -> dict:
+                        "database": conn_sub_dict.get('database', '')
+                    }
+                    conn_sub_dict['configObj'] = configobj
+                    conn_sub_dict.pop('customizedJdbcUrl', None)
+                else:
+                    if 'customizedJdbcUrl' not in conn_sub_dict:
+                        connection_type = conn_sub_dict.get('connection_type', '')
+                        host = conn_sub_dict.get('host', '')
+                        port = conn_sub_dict.get('port', '')
+                        jdbc_use_ssl = conn_sub_dict.get('jdbcUseSSL', '')
+                        username = conn_sub_dict.get('username', '')
+                        password = conn_sub_dict.get('password', '')
+                        conn_sub_dict['customizedJdbcUrl'] = (
+                            f"jdbc:{connection_type}://{host}:{port};"
+                            f"encrypt={jdbc_use_ssl};user={username};password={password};"
+                        )
+            return data
+
+        def auth_type(data: dict) -> dict:
             # If connection_type = mssql_jdts_win_auth fill this with configObj
             # else fill with connectionString.
-            for key, sub_dict in merged_data.items():
-                if sub_dict['connection_type'] == 'mssql_jtds_win_auth':
-                    sub_dict['authType'] = 'configObj'
+            for auth_key, auth_sub_dict in data.items():
+                if auth_sub_dict['connection_type'] == 'mssql_jtds_win_auth':
+                    auth_sub_dict['authType'] = 'configObj'
                 else:
-                    sub_dict['authType'] = 'connectionString'
+                    auth_sub_dict['authType'] = 'connectionString'
 
-            return merged_data
+            return data
 
-        def cribl_databaseType(merged_data: dict) -> dict:
+        def cribl_database_type(data: dict) -> dict:
             """
             Transform the values of the 'connection_type' key in the merged_data dictionary.
 
             Parameters
             ----------
-            merged_data : dict
+            data : dict
                 The dictionary containing the merged data with 'connection_type' keys.
 
             Returns
@@ -414,24 +425,25 @@ class Ingestor:
                 'oracle': 'oracle',
                 'mssql_jtds_win_auth': 'sqlserver',
                 'generic_mssql': 'sqlserver',
-                'db2': None,#'-not supported yet-',
+                'db2': None,  # '-not supported yet-',
                 'postgres': 'postgres',
-                'sybase_ase': None,#'-not supported yet-',
-                'vertica': None#'-not supported yet-'
+                'sybase_ase': None,  # '-not supported yet-',
+                'vertica': None  # '-not supported yet-'
             }
 
-            for key, sub_dict in merged_data.items():
-                if 'connection_type' in sub_dict:
-                    original_type = sub_dict['connection_type']
-                    sub_dict['connection_type'] = connection_type_mapping.get(original_type, original_type)
+            for cribl_key, cribl_sub_dict in data.items():
+                if 'connection_type' in cribl_sub_dict:
+                    original_type = cribl_sub_dict['connection_type']
+                    cribl_sub_dict['connection_type'] = connection_type_mapping.get(original_type, original_type)
 
-            return merged_data
+            return data
 
-        merged_connections_data = cribl_connectionString_configObj(merged_data)
-        merged_connections_data = authType(merged_connections_data)
-        merged_connections_data = cribl_databaseType(merged_connections_data).items()
+        merged_connections_data = cribl_connectionstring_configobj(merged_data)
+        merged_connections_data = auth_type(merged_connections_data)
+        merged_connections_data = cribl_database_type(merged_connections_data)
 
         return merged_connections_data
+
     def load_connections(self, file_names: list | None = None) -> list[BaseModel] | None:
         """
         Load the connection examples from the TOML files and create ConnectionSchema instances.
@@ -443,7 +455,7 @@ class Ingestor:
         ----------
         file_names : list, optional
             A list containing two file names to be merged. The first file should contain the identities data,
-            and the second file should contain the connections data. If not provided, default file names are used.
+            and the second file should contain the connections' data. If not provided, default file names are used.
 
         Returns
         -------
@@ -453,9 +465,12 @@ class Ingestor:
         merged_data = self.merge_examples_connections(file_names)
         connections_obj = []
 
-        for key, row in merged_data:
+        for key, row in merged_data.items():
             connection_data = {
-                "id": f"{key}-{uuid4()}",
+                "id": (
+                    f"{os.environ['DBCONN_PREFIX'] + '-' if os.environ['DBCONN_PREFIX'] else ''}"
+                    f"{key}-{uuid4() if os.environ['DBCONN_SUFFIX'] == '{guid}' else os.environ['DBCONN_SUFFIX']}"
+                ),
                 "databaseType": row.get('connection_type'),
                 "username": row.get('username'),
                 "password": row.get('password'),
@@ -474,6 +489,7 @@ class Ingestor:
                 connection_data['configObj'] = row.get('configObj')
             if 'customizedJdbcUrl' in row:
                 connection_data['connectionString'] = row.get('customizedJdbcUrl')
+            print('CONNECTION DATA :', connection_data)
             connections_obj.append(ConnectionSchema(**connection_data))
 
         self.connection = connections_obj
@@ -494,7 +510,7 @@ class Ingestor:
                 base_url=base_url,
                 cribl_authtoken=self.token,
                 cribl_workergroup_name=cribl_workergroup_name,
-                payload=json.dumps(payload),
+                payload=payload,
             )
             responses.append(response)
 

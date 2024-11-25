@@ -66,7 +66,7 @@ def get_cribl_authentication_token(base_url: str = os.environ["BASE_URL"]) -> st
 
 def post_new_database_connection(
     base_url: str = os.environ["BASE_URL"],
-    payload: dict = {},
+    payload: dict = None,
     cribl_authtoken: str = "",
     cribl_workergroup_name: str = os.environ["CRIBL_WORKERGROUP_NAME"],
 ) -> dict:
@@ -76,6 +76,8 @@ def post_new_database_connection(
     ----------
     base_url : str
         The base URL of the Cribl instance.
+    payload : dict
+        The payload to post to the Cribl instance.
     cribl_authtoken : str
         The auth token for the Cribl instance.
     cribl_workergroup_name : str
@@ -92,7 +94,8 @@ def post_new_database_connection(
         "Authorization": f"Bearer {cribl_authtoken}",
         "Content-Type": "application/json",
     }
-    response = requests.request(method="POST", url=url, headers=headers, data=payload)
+    data_sent = json.dumps(payload)
+    response = requests.request(method="POST", url=url, headers=headers, data=data_sent)
     if response.status_code != 200:
         return {
             "status": "error",
@@ -100,9 +103,10 @@ def post_new_database_connection(
         }
     return response.json()
 
+
 def post_new_input(
     base_url: str = os.environ["BASE_URL"],
-    payload: dict = {},
+    payload: dict = None,
     cribl_authtoken: str = "",
     cribl_workergroup_name: str = os.environ["CRIBL_WORKERGROUP_NAME"],
 ) -> dict:
@@ -112,6 +116,8 @@ def post_new_input(
     ----------
     base_url : str
         The base URL of the Cribl instance.
+    payload : dict
+        The payload to post to the Cribl instance.
     cribl_authtoken : str
         The auth token for the Cribl instance.
     cribl_workergroup_name : str

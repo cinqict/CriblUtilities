@@ -39,7 +39,7 @@ else:
     # Now we can use the Ingestor class to load the examples files
     local_ingestor = Ingestor()
     # %%
-    _ = local_ingestor.get_cribl_authtoken()
+    local_ingestor.get_cribl_authtoken()
     # %%
     inputs = local_ingestor.load_input()
     response_inputs = local_ingestor.post_db_inputs()
