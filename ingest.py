@@ -37,7 +37,7 @@ from typing import List
 import tomli
 from pydantic import BaseModel
 
-from rest_utilities import get_cribl_authentication_token, post_new_database_connection, post_new_input
+from rest_utilities import docker_running, get_cribl_authentication_token, post_new_database_connection, post_new_input
 from schemas import InputSchema, Metadata, Schedule, Collector, CollectorConf, Run, InputType, ConnectionSchema
 
 
@@ -97,6 +97,7 @@ def is_cron_format(value: str) -> bool:
     return bool(re.match(cron_regex, value.strip()))
 
 
+
 class Ingestor:
     def __init__(
             self,
@@ -110,6 +111,9 @@ class Ingestor:
 
     def __str__(self):
         return f"Authentication: {self.identities}\nConnection: {self.connection}\nInput: {self.input}"
+
+    def check_docker_running(self, base_url: str = os.environ["BASE_URL"]) -> None:
+        docker_running(base_url=base_url)
 
     def get_cribl_authtoken(self, base_url: str = os.environ["BASE_URL"]) -> None:
         self.token = get_cribl_authentication_token(base_url=base_url)

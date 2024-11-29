@@ -32,8 +32,23 @@ import requests
 import json
 import os
 from dotenv import load_dotenv, find_dotenv
+import logging
+import traceback
 
 _ = load_dotenv(find_dotenv())
+
+
+def docker_running(base_url: str = os.environ["BASE_URL"]) -> None:
+    """Checks if the Cribl service is running."""
+    try:
+        response = requests.get(base_url)
+        if response.status_code != 200:
+            raise RuntimeError(f"Cribl service is running but returned an error (status code: {response.status_code}).")
+    except requests.exceptions.ConnectionError:
+        logging.error("Connection error occurred:\n" + traceback.format_exc())
+        raise RuntimeError(
+            f"Docker or Cribl service is not running. Ensure Docker is running and Cribl is accessible at {base_url}"
+        )
 
 
 def get_cribl_authentication_token(base_url: str = os.environ["BASE_URL"]) -> str:
@@ -58,9 +73,15 @@ def get_cribl_authentication_token(base_url: str = os.environ["BASE_URL"]) -> st
         }
     )
     headers = {"Content-Type": "application/json"}
-    response = requests.request(method="POST", url=url, headers=headers, data=payload)
-    if response.status_code != 200:
-        raise Exception(f"Failed to get auth token. Response: {response.text}")
+    try:
+        response = requests.request(method="POST", url=url, headers=headers, data=payload)
+    #     if response.status_code != 200:
+    #         raise RuntimeError("Cribl service is running but not healthy.")
+    # except requests.exceptions.ConnectionError:
+    #     raise RuntimeError(f"Failed to connect to Cribl instance. Ensure that Docker is running and Cribl is "
+    #                        f"accessible at {base_url}")
+    except requests.exceptions.RequestException as e:
+        raise RuntimeError(f"Failed to get Cribl auth token. Error: {e}")
     return response.json()["token"]
 
 

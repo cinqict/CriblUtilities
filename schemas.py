@@ -77,7 +77,7 @@ class InputSchema(BaseModel):
 
 
 class ConnectionSchema(BaseModel):
-    class Config:
+    class ConfigDict:
         extra = 'ignore'
 
     id: Optional[str]
@@ -89,8 +89,8 @@ class ConnectionSchema(BaseModel):
     host: str
     identity: str
     jdbcUseSSL: bool
-    connectionString: Optional[str] = Field(default=None, exclude_none=True)
-    configObj: Optional[dict] = Field(default=None, exclude_none=True)
+    connectionString: Optional[str] = Field(default=None, json_schema_extra={"exclude_none": True})
+    configObj: Optional[dict] = Field(default=None, json_schema_extra={"exclude_none": True})
     localTimezoneConversionEnabled: Optional[bool]
     port: int
     readonly: Optional[bool]
