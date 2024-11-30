@@ -17,3 +17,18 @@ To do this we will make:
 
 ## Cleanup
 - `docker compose down`
+
+## Typer (cli) related
+- `brew install pipx`
+- `sudo pipx ensurepath --global` (this is to allow --global options)
+- `pipx install poetry`
+- `poetry config virtualenvs.in-project true` (this makes all venvs in the project)
+
+## cribl-utilities-cli CLI
+- `poetry new cribl-utilities-cli`
+- `cd cribl-utilities-cli`
+- `poetry add typer`
+- `poetry shell`
+- `poetry build`
+- `poetry install`
+- `typer cribl_utilities_cli.main utils docs --output DOCS.md --name cribl-utilities-cli`

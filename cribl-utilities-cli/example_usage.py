@@ -29,7 +29,7 @@
 #   limitations under the License.
 # 
 # %%
-from ingest import Ingestor
+from cribl_utilities_cli.ingest import Ingestor
 import sys
 # %%
 

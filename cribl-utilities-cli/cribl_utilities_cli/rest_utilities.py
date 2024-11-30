@@ -44,6 +44,7 @@ def docker_running(base_url: str = os.environ["BASE_URL"]) -> None:
         response = requests.get(base_url)
         if response.status_code != 200:
             raise RuntimeError(f"Cribl service is running but returned an error (status code: {response.status_code}).")
+        return "Cribl service is running and healthy."
     except requests.exceptions.ConnectionError:
         logging.error("Connection error occurred:\n" + traceback.format_exc())
         raise RuntimeError(
@@ -120,7 +121,7 @@ def post_new_database_connection(
     if response.status_code != 200:
         return {
             "status": "error",
-            "message": f"Failed to post new database connection. Response: {response.json()}",
+            "message": f"Failed to post new database connection. Response: {response.text}",
         }
     return response.json()
 
@@ -159,6 +160,6 @@ def post_new_input(
     if response.status_code != 200:
         return {
             "status": "error",
-            "message": f"Failed to post new input. Response: {response.json()}",
+            "message": f"Failed to post new input. Response: {response.text}",
         }
     return response.json()

@@ -1,19 +1,19 @@
 #
-#           .:-=====-:.         ---   :--:            .--:           .--====-:.                
-#     :=*####***####*+:     :###.  =###*.          -##*        -+#####**####*=:             
-#   .*##*=:.     .:=*#=     :###.  =#####-         -##*      =###+-.      :=*##*:           
-#  -###-                    :###.  =##++##+        -##*    .*##+.            -###=          
-# :###:                     :###.  =##+ +##*.      -##*    *##=               .*##=         
-# *##=                      :###.  =##+  -###-     -##*   =##*                 -###         
-# ###-                      :###.  =##+   .*##+    -##*   +##+                 .###.        
-# ###=                      :###.  =##+     =##*.  -##*   =##*           :     :###.        
-# =##*.                     :###.  =##+      :*##- -##*   .###-         ---:.  *##+         
-#  +##*.                    :###.  =##+       .*##+-##*    -###-         .----=##*          
-#   =###+:         .-**.    :###.  =##+         =##*##*     :*##*-         -=--==       ... 
+#           .:-=====-:.         ---   :--:            .--:           .--====-:.
+#     :=*####***####*+:     :###.  =###*.          -##*        -+#####**####*=:
+#   .*##*=:.     .:=*#=     :###.  =#####-         -##*      =###+-.      :=*##*:
+#  -###-                    :###.  =##++##+        -##*    .*##+.            -###=
+# :###:                     :###.  =##+ +##*.      -##*    *##=               .*##=
+# *##=                      :###.  =##+  -###-     -##*   =##*                 -###
+# ###-                      :###.  =##+   .*##+    -##*   +##+                 .###.
+# ###=                      :###.  =##+     =##*.  -##*   =##*           :     :###.
+# =##*.                     :###.  =##+      :*##- -##*   .###-         ---:.  *##+
+#  +##*.                    :###.  =##+       .*##+-##*    -###-         .----=##*
+#   =###+:         .-**.    :###.  =##+         =##*##*     :*##*-         -=--==       ...
 #    .=####+==-==+*###+:    :###.  =##+          :*###*       -*###*+=-==+###+----.    ----:
 #       :=+*####**+=:       .***   =**=            +**+         .-=+*####*+=:  .:-.    .---.
-#                                                                                           
-#                                                                                          
+#
+#
 #   Copyright 2024 CINQ ICT b.v.
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
@@ -37,8 +37,22 @@ from typing import List
 import tomli
 from pydantic import BaseModel
 
-from rest_utilities import docker_running, get_cribl_authentication_token, post_new_database_connection, post_new_input
-from schemas import InputSchema, Metadata, Schedule, Collector, CollectorConf, Run, InputType, ConnectionSchema
+from cribl_utilities_cli.rest_utilities import (
+    docker_running,
+    get_cribl_authentication_token,
+    post_new_database_connection,
+    post_new_input,
+)
+from cribl_utilities_cli.schemas import (
+    InputSchema,
+    Metadata,
+    Schedule,
+    Collector,
+    CollectorConf,
+    Run,
+    InputType,
+    ConnectionSchema,
+)
 
 
 def load_examples(files: List[str]) -> tuple[dict, dict]:
@@ -90,18 +104,17 @@ def is_cron_format(value: str) -> bool:
 
     # Cron schedule regex: Matches standard cron patterns
     cron_regex = (
-        r'^(\*|([0-5]?\d)) (\*|([01]?\d|2[0-3])) (\*|([0-2]?\d)) (\*|([1-7]))$|'
-        r'^@(?:yearly|annually|monthly|weekly|daily|hourly)$'
+        r"^(\*|([0-5]?\d)) (\*|([01]?\d|2[0-3])) (\*|([0-2]?\d)) (\*|([1-7]))$|"
+        r"^@(?:yearly|annually|monthly|weekly|daily|hourly)$"
     )
 
     return bool(re.match(cron_regex, value.strip()))
 
 
-
 class Ingestor:
     def __init__(
-            self,
-            examples_folder: str = "examples",
+        self,
+        examples_folder: str = "examples",
     ):
         self.examples_folder = examples_folder
         self.identities = None
@@ -113,7 +126,7 @@ class Ingestor:
         return f"Authentication: {self.identities}\nConnection: {self.connection}\nInput: {self.input}"
 
     def check_docker_running(self, base_url: str = os.environ["BASE_URL"]) -> None:
-        docker_running(base_url=base_url)
+        return docker_running(base_url=base_url)
 
     def get_cribl_authtoken(self, base_url: str = os.environ["BASE_URL"]) -> None:
         self.token = get_cribl_authentication_token(base_url=base_url)
@@ -161,14 +174,14 @@ class Ingestor:
             Transform values in "disabled" entry according to provided table in Mapping API Cribl
             """
             for trans_key, trans_sub_dict in data.items():
-                if 'disabled' in trans_sub_dict:
-                    value = trans_sub_dict['disabled']
+                if "disabled" in trans_sub_dict:
+                    value = trans_sub_dict["disabled"]
                     if isinstance(value, str):
                         value = value.lower()
-                    if value in ['true', 1, True, '1']:
-                        trans_sub_dict['disabled'] = False
-                    elif value in ['false', 0, False, '0']:
-                        trans_sub_dict['disabled'] = True
+                    if value in ["true", 1, True, "1"]:
+                        trans_sub_dict["disabled"] = False
+                    elif value in ["false", 0, False, "0"]:
+                        trans_sub_dict["disabled"] = True
             return data
 
         def seconds_to_cron(seconds: int) -> str:
@@ -200,10 +213,10 @@ class Ingestor:
         merged_input_data = transform_disabled_values(merged_data)
 
         for key, sub_dict in merged_input_data.items():
-            interval = sub_dict.get('interval')
+            interval = sub_dict.get("interval")
             if interval and not is_cron_format(interval):
                 try:
-                    sub_dict['interval'] = seconds_to_cron(int(interval))
+                    sub_dict["interval"] = seconds_to_cron(int(interval))
                 except ValueError:
                     continue
 
@@ -225,6 +238,7 @@ class Ingestor:
             A list containing the InputSchema instances.
 
         """
+
         def create_metadata(data):
             """
             Create a list of Metadata instances from the given data.
@@ -242,7 +256,7 @@ class Ingestor:
                 Metadata(name="host", value=data.get("host", "")),
                 Metadata(name="index", value=data.get("index", "")),
                 Metadata(name="source", value=data.get("source", "")),
-                Metadata(name="sourcetype", value=data.get("sourcetype", ""))
+                Metadata(name="sourcetype", value=data.get("sourcetype", "")),
             ]
 
         merged_data = self.merge_examples_input(file_names)
@@ -250,24 +264,20 @@ class Ingestor:
         input_obj = [
             InputSchema(
                 schedule=Schedule(
-                    interval=row['interval'],
-                    run=Run(mode=row['mode']),
-                    disabled=row['disabled']
+                    interval=row["interval"],
+                    run=Run(mode=row["mode"]),
+                    disabled=row["disabled"],
                 ),
                 collector=Collector(
-                    conf=CollectorConf(
-                        connection=row['connection'],
-                        query=row['query']
-                    )
+                    conf=CollectorConf(connection=row["connection"], query=row["query"])
                 ),
-                input=InputType(
-                    metadata=create_metadata(row)
-                ),
+                input=InputType(metadata=create_metadata(row)),
                 id=(
                     f"{os.environ['DBCOLL_PREFIX'] + '-' if os.environ['DBCOLL_PREFIX'] else ''}"
                     f"{key}-"
                     f"{uuid4() if os.environ['DBCOLL_SUFFIX'] == '{guid}' else os.environ['DBCOLL_SUFFIX']}"
-                ))
+                ),
+            )
             for key, row in merged_data.items()
         ]
 
@@ -290,9 +300,9 @@ class Ingestor:
         return self.input
 
     def post_db_inputs(
-            self,
-            base_url: str = os.environ["BASE_URL"],
-            cribl_workergroup_name: str = os.environ["CRIBL_WORKERGROUP_NAME"],
+        self,
+        base_url: str = os.environ["BASE_URL"],
+        cribl_workergroup_name: str = os.environ["CRIBL_WORKERGROUP_NAME"],
     ) -> list[dict]:
         return [
             post_new_input(
@@ -310,7 +320,7 @@ class Ingestor:
         Parameters
         ----------
         file_names : list
-            A list containing two file names to be merged. The first file should contain the identities data, 
+            A list containing two file names to be merged. The first file should contain the identities data,
             and the second file should contain the connections' data.
 
         Returns
@@ -360,40 +370,39 @@ class Ingestor:
                 The updated dictionary with `configObj` or `customizedJdbcUrl` added to each connection entry.
             """
             for conn_key, conn_sub_dict in data.items():
-                if conn_sub_dict['connection_type'] == 'mssql_jtds_win_auth':
+                if conn_sub_dict["connection_type"] == "mssql_jtds_win_auth":
                     configobj = {
                         "authentication": {
                             "type": "ntlm",
                             "options": {
-                                "userName": conn_sub_dict['username'],
-                                "password": conn_sub_dict['password'],
-                                "domain": conn_sub_dict.get('domain_name', '')
-                            }
+                                "userName": conn_sub_dict["username"],
+                                "password": conn_sub_dict["password"],
+                                "domain": conn_sub_dict.get("domain_name", ""),
+                            },
                         },
                         "options": {
                             "connectTimeout": 15000,
-                            "trustServerCertificate": True
+                            "trustServerCertificate": True,
                         },
                         "connectionTimeout": 15000,
-                        "port": conn_sub_dict['port'],
+                        "port": conn_sub_dict["port"],
                         "server": (
                             f"{os.environ['BASE_URL']}/api/v1/m/"
                             f"{os.environ['CRIBL_WORKERGROUP_NAME']}/lib/database-connections"
                         ),
-
-                        "database": conn_sub_dict.get('database', '')
+                        "database": conn_sub_dict.get("database", ""),
                     }
-                    conn_sub_dict['configObj'] = configobj
-                    conn_sub_dict.pop('customizedJdbcUrl', None)
+                    conn_sub_dict["configObj"] = configobj
+                    conn_sub_dict.pop("customizedJdbcUrl", None)
                 else:
-                    if 'customizedJdbcUrl' not in conn_sub_dict:
-                        connection_type = conn_sub_dict.get('connection_type', '')
-                        host = conn_sub_dict.get('host', '')
-                        port = conn_sub_dict.get('port', '')
-                        jdbc_use_ssl = conn_sub_dict.get('jdbcUseSSL', '')
-                        username = conn_sub_dict.get('username', '')
-                        password = conn_sub_dict.get('password', '')
-                        conn_sub_dict['customizedJdbcUrl'] = (
+                    if "customizedJdbcUrl" not in conn_sub_dict:
+                        connection_type = conn_sub_dict.get("connection_type", "")
+                        host = conn_sub_dict.get("host", "")
+                        port = conn_sub_dict.get("port", "")
+                        jdbc_use_ssl = conn_sub_dict.get("jdbcUseSSL", "")
+                        username = conn_sub_dict.get("username", "")
+                        password = conn_sub_dict.get("password", "")
+                        conn_sub_dict["customizedJdbcUrl"] = (
                             f"jdbc:{connection_type}://{host}:{port};"
                             f"encrypt={jdbc_use_ssl};user={username};password={password};"
                         )
@@ -403,10 +412,10 @@ class Ingestor:
             # If connection_type = mssql_jdts_win_auth fill this with configObj
             # else fill with connectionString.
             for auth_key, auth_sub_dict in data.items():
-                if auth_sub_dict['connection_type'] == 'mssql_jtds_win_auth':
-                    auth_sub_dict['authType'] = 'configObj'
+                if auth_sub_dict["connection_type"] == "mssql_jtds_win_auth":
+                    auth_sub_dict["authType"] = "configObj"
                 else:
-                    auth_sub_dict['authType'] = 'connectionString'
+                    auth_sub_dict["authType"] = "connectionString"
 
             return data
 
@@ -425,20 +434,22 @@ class Ingestor:
                 The transformed dictionary with updated 'connection_type' values.
             """
             connection_type_mapping = {
-                'oracle_service': 'oracle',
-                'oracle': 'oracle',
-                'mssql_jtds_win_auth': 'sqlserver',
-                'generic_mssql': 'sqlserver',
-                'db2': None,  # '-not supported yet-',
-                'postgres': 'postgres',
-                'sybase_ase': None,  # '-not supported yet-',
-                'vertica': None  # '-not supported yet-'
+                "oracle_service": "oracle",
+                "oracle": "oracle",
+                "mssql_jtds_win_auth": "sqlserver",
+                "generic_mssql": "sqlserver",
+                "db2": None,  # '-not supported yet-',
+                "postgres": "postgres",
+                "sybase_ase": None,  # '-not supported yet-',
+                "vertica": None,  # '-not supported yet-'
             }
 
             for cribl_key, cribl_sub_dict in data.items():
-                if 'connection_type' in cribl_sub_dict:
-                    original_type = cribl_sub_dict['connection_type']
-                    cribl_sub_dict['connection_type'] = connection_type_mapping.get(original_type, original_type)
+                if "connection_type" in cribl_sub_dict:
+                    original_type = cribl_sub_dict["connection_type"]
+                    cribl_sub_dict["connection_type"] = connection_type_mapping.get(
+                        original_type, original_type
+                    )
 
             return data
 
@@ -448,7 +459,9 @@ class Ingestor:
 
         return merged_connections_data
 
-    def load_connections(self, file_names: list | None = None) -> list[BaseModel] | None:
+    def load_connections(
+        self, file_names: list | None = None
+    ) -> list[BaseModel] | None:
         """
         Load the connection examples from the TOML files and create ConnectionSchema instances.
 
@@ -475,25 +488,27 @@ class Ingestor:
                     f"{os.environ['DBCONN_PREFIX'] + '-' if os.environ['DBCONN_PREFIX'] else ''}"
                     f"{key}-{uuid4() if os.environ['DBCONN_SUFFIX'] == '{guid}' else os.environ['DBCONN_SUFFIX']}"
                 ),
-                "databaseType": row.get('connection_type'),
-                "username": row.get('username'),
-                "password": row.get('password'),
-                "database": row.get('database'),
-                "disabled": row.get('disabled'),
-                "host": row.get('host'),
-                "identity": row.get('identity'),
-                "jdbcUseSSL": row.get('jdbcUseSSL'),
-                "localTimezoneConversionEnabled": row.get('localTimezoneConversionEnabled'),
-                "port": row.get('port'),
-                "readonly": row.get('readonly'),
-                "timezone": row.get('timezone'),
-                "authType": row.get('authType')
+                "databaseType": row.get("connection_type"),
+                "username": row.get("username"),
+                "password": row.get("password"),
+                "database": row.get("database"),
+                "disabled": row.get("disabled"),
+                "host": row.get("host"),
+                "identity": row.get("identity"),
+                "jdbcUseSSL": row.get("jdbcUseSSL"),
+                "localTimezoneConversionEnabled": row.get(
+                    "localTimezoneConversionEnabled"
+                ),
+                "port": row.get("port"),
+                "readonly": row.get("readonly"),
+                "timezone": row.get("timezone"),
+                "authType": row.get("authType"),
             }
-            if 'configObj' in row:
-                connection_data['configObj'] = row.get('configObj')
-            if 'customizedJdbcUrl' in row:
-                connection_data['connectionString'] = row.get('customizedJdbcUrl')
-            print('CONNECTION DATA :', connection_data)
+            if "configObj" in row:
+                connection_data["configObj"] = row.get("configObj")
+            if "customizedJdbcUrl" in row:
+                connection_data["connectionString"] = row.get("customizedJdbcUrl")
+            print("CONNECTION DATA :", connection_data)
             connections_obj.append(ConnectionSchema(**connection_data))
 
         self.connection = connections_obj
@@ -501,15 +516,17 @@ class Ingestor:
         return self.connection
 
     def post_db_connections(
-            self,
-            base_url: str = os.environ["BASE_URL"],
-            cribl_workergroup_name: str = os.environ["CRIBL_WORKERGROUP_NAME"],
+        self,
+        base_url: str = os.environ["BASE_URL"],
+        cribl_workergroup_name: str = os.environ["CRIBL_WORKERGROUP_NAME"],
     ) -> list[dict]:
         responses = []
         for i in self.connection:
             payload = json.loads(i.model_dump_json())
-            if 'configObj' in payload:
-                payload['configObj'] = json.dumps(payload['configObj'])  # Convert configObj to JSON string
+            if "configObj" in payload:
+                payload["configObj"] = json.dumps(
+                    payload["configObj"]
+                )  # Convert configObj to JSON string
             response = post_new_database_connection(
                 base_url=base_url,
                 cribl_authtoken=self.token,
