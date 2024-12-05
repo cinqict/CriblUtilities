@@ -1,10 +1,12 @@
 **API Inputs**
 
-This table shows the information sent with each field in the API Inputs call. 
+This table shows the information sent with each field in the API Inputs call.  
+db\_inputs is left joined to db\_connections with the connection field from db\_inputs and the key name of the db\_connections entries.
 
 | API Inputs field | db\_inputs.conf | db\_connections.conf | Fill in value |
 | :---- | :---- | :---- | :---- |
 | type |  |  | "collection" |
+| authType\* |  |  |  |
 | schedule.cronSchedule | interval |  |  |
 | schedule.run.mode | mode |  |  |
 | schedule.enabled\* | disabled |  |  |
@@ -14,11 +16,11 @@ This table shows the information sent with each field in the API Inputs call.
 | input.type |  |  | "collection" |
 | input.metadata\[0\].name |  |  | “host” |
 | input.metadata\[0\].value | host |  |  |
-| input.metadata\[1\].value |  |  | “index” |
+| input.metadata\[1\].name |  |  | “index” |
 | input.metadata\[1\].value | index |  |  |
-| input.metadata\[2\].value |  |  | “source” |
+| input.metadata\[2\].name |  |  | “source” |
 | input.metadata\[2\].value | source |  |  |
-| input.metadata\[3\].value |  |  | “sourcetype” |
+| input.metadata\[3\].name |  |  | “sourcetype” |
 | input.metadata\[3\].value | sourcetype |  |  |
 | id | \[....\]+unique code |  |  |
 
@@ -27,6 +29,9 @@ index\_time\_mode
 max\_rows
 
 **API Connections**
+
+This table shows the information sent with each field in the API Connections call.   
+db\_connections is left joined to identities with the identity field from db\_connections and the key name of identities
 
 | API Connections Field | db\_connections.conf | identities.conf |
 | :---- | :---- | :---- |
@@ -46,6 +51,11 @@ max\_rows
 | timezone |  | None |
 
 ## 
+
+## authType
+
+If connection\_type=mssql\_jdts\_win\_auth fill this with configObj   
+else fill with connectionString.
 
 ## schedule.enabled
 
@@ -78,4 +88,25 @@ for \-not supported yet- throw an error.
 ## connectionString
 
 If available this should be filled with customizedJdbcUrl contents. If not available this needs to be drafted using parameters (in curly brackets) available:  
-jdbc:{connection\_type}://{host}:{port};encrypt={jdbcUseSSL};user={username};password={password};  
+jdbc:{connection\_type}://{host}:{post};encrypt={jdbcUseSSL};user={username};password={password};
+
+If connection\_type=mssql\_jdts\_win\_auth fill configObj in stead of connectionString with the following:  
+{  
+  "authentication": {  
+    "type": "ntlm",  
+    "options": {  
+      "userName": "{username}",  
+      "password": "{password}",  
+      "domain": "{domain}"  
+    }  
+  },  
+  "options": {  
+    "connectTimeout": 15000,  
+    "trustServerCertificate": true  
+  },  
+  "connectionTimeout": 15000,  
+  "port": {port},  
+  "server": "{url}",  
+  "database": "{databasename}"  
+}
+

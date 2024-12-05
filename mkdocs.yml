@@ -31,9 +31,10 @@
 site_name: Splunk to Cribl
 
 nav:
-  - Home: ../README.md
+  - Home: index.md
   - Mapping: Mapping API Cribl.md
   - TODOS: TODOS.md
+  - cli-docs: cli-docs.md
 
 theme:
   name: mkdocs

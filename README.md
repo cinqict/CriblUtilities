@@ -13,7 +13,15 @@ To do this we will make:
 - `docker compose up -d`
   - login and update admin password (default is `admin` and `admin`)
 - `pip install -r requirements.txt`
-- `python example_usage.py`
+
+## To serve the docs
+- `mkdocs serve`
+
+## To run unit tests
+- `docker compose up -d`
+- `pip install -r requirements.txt`
+- `cd cribl-utilities-cli`
+- `pytest`
 
 ## Cleanup
 - `docker compose down`
