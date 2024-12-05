@@ -9,7 +9,7 @@ To do this we will make:
 3. we will make a Docker image using the cli so people can easily use it without installing a bunch of stuff first
 
 ## To run
-- Make sure to have installed a python version >=3.10
+- Make sure to have installed a python version >=3.13
 - `docker compose up -d`
   - login and update admin password (default is `admin` and `admin`)
 - `pip install -r requirements.txt`
@@ -19,8 +19,16 @@ To do this we will make:
 - `docker compose down`
 
 ## Typer (cli) related
+### Unix (macOS, Linux)
 - `brew install pipx`
 - `sudo pipx ensurepath --global` (this is to allow --global options)
+- `pipx install poetry`
+- `poetry config virtualenvs.in-project true` (this makes all venvs in the project)
+### Windows
+-  Open PowerShell as administrator
+- `pip install pipx`
+- `pipx ensurepath` 
+-  Close PowerShell and open a new one
 - `pipx install poetry`
 - `poetry config virtualenvs.in-project true` (this makes all venvs in the project)
 

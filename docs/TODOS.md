@@ -16,5 +16,5 @@ MkDocs is free and easy to use. It is a static site generator that's geared towa
         - [ ] warning if username, password, or domain are missing. Set schedule.enable to zero
         - [ ] in each field throw error in case of data type mismatch
 - [ ] write documentation for the ingestor class (make sure your docstrings are good)
-- [ ] create a cli (using Typer) that uses the ingestor class to post to the Cribl API
+- [✓] create a cli (using Typer) that uses the ingestor class to post to the Cribl API
 - [ ] create a Dockerfile that uses the cli to post to the Cribl API and publish it to Docker Hub

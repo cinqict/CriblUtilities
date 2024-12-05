@@ -33,8 +33,8 @@ from cribl_utilities_cli.ingest import Ingestor
 import sys
 # %%
 
-if sys.version_info < (3, 10):
-    raise RuntimeError("This project requires Python 3.10 or higher.")
+if sys.version_info < (3, 13):
+    raise RuntimeError("This project requires Python 3.13 or higher.")
 else:
     # Now we can use the Ingestor class to load the examples files
     local_ingestor = Ingestor()
