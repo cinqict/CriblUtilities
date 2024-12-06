@@ -38,6 +38,23 @@ import traceback
 _ = load_dotenv(find_dotenv())
 
 
+def environment_variables() -> None:
+    """Checks if the required environment variables are set."""
+    mandatory_vars = {
+        "CRIBL_USERNAME": "your_cribl_username",
+        "CRIBL_PASSWORD": "your_cribl_password",
+        "BASE_URL": "your_base_url",
+        "CRIBL_WORKERGROUP_NAME": "your_workergroup_name"
+    }
+
+    for var, default_value in mandatory_vars.items():
+        if var not in os.environ:
+            raise EnvironmentError(f"Environment variable {var} is not set.")
+        if os.environ[var] == "":
+            raise ValueError(f"Mandatory environment variable {var} is empty.")
+        if os.environ[var] == default_value:
+            raise ValueError(f"Mandatory environment variable {var} is not set correctly.")
+
 def docker_running(base_url: str = os.environ["BASE_URL"]) -> None:
     """Checks if the Cribl service is running."""
     try:
@@ -50,7 +67,6 @@ def docker_running(base_url: str = os.environ["BASE_URL"]) -> None:
         raise RuntimeError(
             f"Docker or Cribl service is not running. Ensure Docker is running and Cribl is accessible at {base_url}"
         )
-
 
 def get_cribl_authentication_token(base_url: str = os.environ["BASE_URL"]) -> str:
     """Returns the auth token for the Cribl instance.

@@ -38,6 +38,7 @@ import tomli
 from pydantic import BaseModel
 
 from cribl_utilities_cli.rest_utilities import (
+    environment_variables,
     docker_running,
     get_cribl_authentication_token,
     post_new_database_connection,
@@ -124,6 +125,9 @@ class Ingestor:
 
     def __str__(self):
         return f"Authentication: {self.identities}\nConnection: {self.connection}\nInput: {self.input}"
+
+    def check_environment_variables(self) -> None:
+        return environment_variables()
 
     def check_docker_running(self, base_url: str = os.environ["BASE_URL"]) -> None:
         return docker_running(base_url=base_url)
