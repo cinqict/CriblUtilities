@@ -72,11 +72,16 @@ def load_examples(files: List[str]) -> tuple[dict, dict]:
     """
 
     def load_and_format(file_path: str) -> dict:
-        with open(file_path) as f:
-            tmp = f.read()
-            tmp = re.sub(r"\\\n", " ", tmp)
-            tmp_formatted = re.sub(r"(\s*=\s*)(.*)", r"\1'''\2'''", tmp)
-            tomli_db_inputs = dict(tomli.loads(tmp_formatted).items())
+        if not os.path.exists(file_path):
+            raise FileNotFoundError(f"File not found at: {file_path}")
+        try:
+            with open(file_path) as f:
+                tmp = f.read()
+                tmp = re.sub(r"\\\n", " ", tmp)
+                tmp_formatted = re.sub(r"(\s*=\s*)(.*)", r"\1'''\2'''", tmp)
+                tomli_db_inputs = dict(tomli.loads(tmp_formatted).items())
+        except Exception as e:
+            raise ValueError(f"Error loading file: {file_path}. Error: {e}")
         return tomli_db_inputs
 
     # Load and parse each file
@@ -129,7 +134,7 @@ class Ingestor:
     def check_environment_variables(self) -> None:
         return environment_variables()
 
-    def check_docker_running(self, base_url: str = os.environ["BASE_URL"]) -> None:
+    def check_docker_running(self, base_url: str = os.environ["BASE_URL"]) -> str:
         return docker_running(base_url=base_url)
 
     def get_cribl_authtoken(self, base_url: str = os.environ["BASE_URL"]) -> None:

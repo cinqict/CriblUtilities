@@ -10,11 +10,13 @@
 - [✓] make a decision on what documentation we will use (**sphinx**, mkdocs, etc.)  
 MkDocs is free and easy to use. It is a static site generator that's geared towards project documentation. It is simple to configure and use, and it is also easy to customize.
 - [ ] write unit tests for the ingestor class. Consider:  
-        - [ ] environment variables set (right)  
-        - [ ] connection to Cribl  
+        - [✓] environment variables set (right)  
+        - [✓] connection to Cribl  
         - [ ] validation of input files: 3 files, right format  
-        - [ ] warning if username, password, or domain are missing. Set schedule.enable to zero  
-        - [ ] in each field throw error in case of data type mismatch  
+        - [✓] warning if username, password, or domain are missing.
+        - [ ] validation of input path and input file names
+        - [ ] in each field throw error in case of data type mismatch 
+- [ ] Make optional parameter to overwrite schedule.enable to false for all
 - [ ] write documentation for the ingestor class (make sure your docstrings are good)
 - [✓] create a cli (using Typer) that uses the ingestor class to post to the Cribl API
 - [ ] create a Dockerfile that uses the cli to post to the Cribl API and publish it to Docker Hub

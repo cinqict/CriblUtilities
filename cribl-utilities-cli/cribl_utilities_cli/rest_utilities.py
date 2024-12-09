@@ -55,8 +55,9 @@ def environment_variables() -> None:
         if os.environ[var] == default_value:
             raise ValueError(f"Mandatory environment variable {var} is not set correctly.")
 
-def docker_running(base_url: str = os.environ["BASE_URL"]) -> None:
-    """Checks if the Cribl service is running."""
+
+def docker_running(base_url: str = os.environ["BASE_URL"]) -> str:
+    """Checks if Docker is running and Cribl is accessible."""
     try:
         response = requests.get(base_url)
         if response.status_code != 200:
@@ -64,9 +65,15 @@ def docker_running(base_url: str = os.environ["BASE_URL"]) -> None:
         return "Cribl service is running and healthy."
     except requests.exceptions.ConnectionError:
         logging.error("Connection error occurred:\n" + traceback.format_exc())
-        raise RuntimeError(
+        raise ConnectionError(
             f"Docker or Cribl service is not running. Ensure Docker is running and Cribl is accessible at {base_url}"
         )
+    except requests.exceptions.Timeout as e:
+        raise TimeoutError(f"Request to {base_url} timed out. Error: {e}")
+    except requests.exceptions.RequestException as e:
+        raise RuntimeError(f"An unexpected error occurred: {e}")
+
+
 
 def get_cribl_authentication_token(base_url: str = os.environ["BASE_URL"]) -> str:
     """Returns the auth token for the Cribl instance.
@@ -90,16 +97,24 @@ def get_cribl_authentication_token(base_url: str = os.environ["BASE_URL"]) -> st
         }
     )
     headers = {"Content-Type": "application/json"}
+    # try:
+    #     response = requests.request(method="POST", url=url, headers=headers, data=payload)
+    # except requests.exceptions.RequestException as e:
+    #     raise ConnectionError(f"Failed to get Cribl auth token. Error: {e}")
+
     try:
-        response = requests.request(method="POST", url=url, headers=headers, data=payload)
-    #     if response.status_code != 200:
-    #         raise RuntimeError("Cribl service is running but not healthy.")
-    # except requests.exceptions.ConnectionError:
-    #     raise RuntimeError(f"Failed to connect to Cribl instance. Ensure that Docker is running and Cribl is "
-    #                        f"accessible at {base_url}")
+        response = requests.post(url, headers=headers, data=payload)
     except requests.exceptions.RequestException as e:
         raise RuntimeError(f"Failed to get Cribl auth token. Error: {e}")
-    return response.json()["token"]
+
+    try:
+        token = response.json().get("token")
+        if not token:
+            raise KeyError("Token not found in the response.")
+    except json.JSONDecodeError:
+        raise ValueError("Invalid JSON response from Cribl.")
+
+    return token
 
 
 def post_new_database_connection(
