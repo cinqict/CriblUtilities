@@ -1,8 +1,8 @@
 [tool.poetry]
 name = "cribl-utilities-cli"
-version = "0.1.0"
-description = ""
-authors = ["James Twose <james.twose2711@gmail.com>"]
+version = "0.1.2"
+description = "A CLI tool to interact with Cribl"
+authors = ["CINQ ICT <info@cinqict.nl>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]

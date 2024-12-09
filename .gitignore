@@ -164,3 +164,4 @@ scratch*
 .env
 test.py
 drafts.ipynb
+.pypirc
