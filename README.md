@@ -48,3 +48,10 @@ To do this we will make:
 - `poetry build`
 - `poetry install`
 - `typer cribl_utilities_cli.main utils docs --output DOCS.md --name cribl-utilities-cli`
+
+## Build and publish CLI
+- make sure to have pipx and poetry installed and to be in the folder of the CLI itself
+- `poetry shell`
+- `poetry build`
+- `poetry config http-basic.pypi <username> <password>` (run once)
+- `poetry publish --build`
