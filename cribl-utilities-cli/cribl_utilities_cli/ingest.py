@@ -387,8 +387,8 @@ class Ingestor:
                         "connectionTimeout": 15000,
                         "port": conn_sub_dict["port"],
                         "server": (
-                            f"{os.getenv('BASE_URL', "http://localhost:19000")}/api/v1/m/"
-                            f"{os.getenv("CRIBL_WORKERGROUP_NAME", "default")}/lib/database-connections"
+                            f"{os.getenv('BASE_URL', 'http://localhost:19000')}/api/v1/m/"
+                            f"{os.getenv('CRIBL_WORKERGROUP_NAME', 'default')}/lib/database-connections"
                         ),
                         "database": conn_sub_dict.get("database", ""),
                     }
