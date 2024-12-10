@@ -38,7 +38,7 @@ import traceback
 _ = load_dotenv(find_dotenv())
 
 
-def docker_running(base_url: str = os.environ["BASE_URL"]) -> None:
+def docker_running(base_url: str = os.getenv("BASE_URL", "http://localhost:19000")) -> str:
     """Checks if the Cribl service is running."""
     try:
         response = requests.get(base_url)
@@ -52,7 +52,7 @@ def docker_running(base_url: str = os.environ["BASE_URL"]) -> None:
         )
 
 
-def get_cribl_authentication_token(base_url: str = os.environ["BASE_URL"]) -> str:
+def get_cribl_authentication_token(base_url: str = os.getenv("BASE_URL", "http://localhost:19000")) -> str:
     """Returns the auth token for the Cribl instance.
 
     Parameters
@@ -69,8 +69,8 @@ def get_cribl_authentication_token(base_url: str = os.environ["BASE_URL"]) -> st
     url = f"{base_url}/api/v1/auth/login"
     payload = json.dumps(
         {
-            "username": os.environ["CRIBL_USERNAME"],
-            "password": os.environ["CRIBL_PASSWORD"],
+            "username": os.getenv("CRIBL_USERNAME", "admin"),
+            "password": os.getenv("CRIBL_PASSWORD", "admin"),
         }
     )
     headers = {"Content-Type": "application/json"}
@@ -87,10 +87,10 @@ def get_cribl_authentication_token(base_url: str = os.environ["BASE_URL"]) -> st
 
 
 def post_new_database_connection(
-    base_url: str = os.environ["BASE_URL"],
+    base_url: str = os.getenv("BASE_URL", "http://localhost:19000"),
     payload: dict = None,
     cribl_authtoken: str = "",
-    cribl_workergroup_name: str = os.environ["CRIBL_WORKERGROUP_NAME"],
+    cribl_workergroup_name: str = os.getenv("CRIBL_WORKERGROUP_NAME", "default"),
 ) -> dict:
     """Posts a new database connection to the Cribl instance.
 
@@ -127,10 +127,10 @@ def post_new_database_connection(
 
 
 def post_new_input(
-    base_url: str = os.environ["BASE_URL"],
+    base_url: str = os.getenv("BASE_URL", "http://localhost:19000"),
     payload: dict = None,
     cribl_authtoken: str = "",
-    cribl_workergroup_name: str = os.environ["CRIBL_WORKERGROUP_NAME"],
+    cribl_workergroup_name: str = os.getenv("CRIBL_WORKERGROUP_NAME", "default"),
 ) -> dict:
     """Posts a new input to the Cribl instance.
 
