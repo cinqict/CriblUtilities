@@ -137,7 +137,7 @@ class Ingestor:
     def check_docker_running(self, base_url: str = os.environ["BASE_URL"]) -> str:
         return docker_running(base_url=base_url)
 
-    def get_cribl_authtoken(self, base_url: str = os.environ["BASE_URL"]) -> None:
+    def get_cribl_authtoken(self, base_url: str = os.getenv("BASE_URL", "http://localhost:19000")) -> None:
         self.token = get_cribl_authentication_token(base_url=base_url)
 
     def merge_examples_input(self, file_names: list | None = None) -> dict:
@@ -282,9 +282,9 @@ class Ingestor:
                 ),
                 input=InputType(metadata=create_metadata(row)),
                 id=(
-                    f"{os.environ['DBCOLL_PREFIX'] + '-' if os.environ['DBCOLL_PREFIX'] else ''}"
+                    f"{os.getenv('DBCOLL_PREFIX', '') + '-' if os.getenv('DBCOLL_PREFIX', '') else ''}"
                     f"{key}-"
-                    f"{uuid4() if os.environ['DBCOLL_SUFFIX'] == '{guid}' else os.environ['DBCOLL_SUFFIX']}"
+                    f"{uuid4() if os.getenv('DBCOLL_SUFFIX', '') == '{guid}' else os.getenv('DBCOLL_SUFFIX', '')}"
                 ),
             )
             for key, row in merged_data.items()
@@ -310,8 +310,8 @@ class Ingestor:
 
     def post_db_inputs(
         self,
-        base_url: str = os.environ["BASE_URL"],
-        cribl_workergroup_name: str = os.environ["CRIBL_WORKERGROUP_NAME"],
+        base_url: str = os.getenv("BASE_URL", "http://localhost:19000"),
+        cribl_workergroup_name: str = os.getenv("CRIBL_WORKERGROUP_NAME", "default"),
     ) -> list[dict]:
         return [
             post_new_input(
@@ -396,8 +396,8 @@ class Ingestor:
                         "connectionTimeout": 15000,
                         "port": conn_sub_dict["port"],
                         "server": (
-                            f"{os.environ['BASE_URL']}/api/v1/m/"
-                            f"{os.environ['CRIBL_WORKERGROUP_NAME']}/lib/database-connections"
+                            f"{os.getenv('BASE_URL', 'http://localhost:19000')}/api/v1/m/"
+                            f"{os.getenv('CRIBL_WORKERGROUP_NAME', 'default')}/lib/database-connections"
                         ),
                         "database": conn_sub_dict.get("database", ""),
                     }
@@ -494,8 +494,8 @@ class Ingestor:
         for key, row in merged_data.items():
             connection_data = {
                 "id": (
-                    f"{os.environ['DBCONN_PREFIX'] + '-' if os.environ['DBCONN_PREFIX'] else ''}"
-                    f"{key}-{uuid4() if os.environ['DBCONN_SUFFIX'] == '{guid}' else os.environ['DBCONN_SUFFIX']}"
+                    f"{os.getenv('DBCONN_PREFIX', '') + '-' if os.getenv('DBCONN_PREFIX', '') else ''}"
+                    f"{key}-{uuid4() if os.getenv('DBCONN_PREFIX', '') == '{guid}' else os.getenv('DBCONN_PREFIX', '')}"
                 ),
                 "databaseType": row.get("connection_type"),
                 "username": row.get("username"),
@@ -526,8 +526,8 @@ class Ingestor:
 
     def post_db_connections(
         self,
-        base_url: str = os.environ["BASE_URL"],
-        cribl_workergroup_name: str = os.environ["CRIBL_WORKERGROUP_NAME"],
+        base_url: str = os.getenv("BASE_URL", "http://localhost:19000"),
+        cribl_workergroup_name: str = os.getenv("CRIBL_WORKERGROUP_NAME", "default"),
     ) -> list[dict]:
         responses = []
         for i in self.connection:
