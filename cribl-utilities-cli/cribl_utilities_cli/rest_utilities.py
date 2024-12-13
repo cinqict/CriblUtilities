@@ -56,7 +56,7 @@ def environment_variables() -> None:
             raise ValueError(f"Mandatory environment variable {var} is not set correctly.")
 
 
-def docker_running(base_url: str = os.environ["BASE_URL"]) -> str:
+def cribl_health(base_url: str = os.environ["BASE_URL"]) -> str:
     """Checks if Docker is running and Cribl is accessible."""
     try:
         response = requests.get(base_url)

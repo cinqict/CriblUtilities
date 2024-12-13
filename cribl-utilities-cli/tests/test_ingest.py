@@ -51,7 +51,7 @@ def test_environment_variables(ingestor, monkeypatch):
             ingestor.check_environment_variables()
 
 
-def test_check_docker_running(ingestor):
+def test_check_cribl_health(ingestor):
     base_url = os.environ["BASE_URL"]
     with patch("requests.get") as mock_get:
         mock_response = Mock()
@@ -59,25 +59,25 @@ def test_check_docker_running(ingestor):
         mock_get.return_value = mock_response
 
         with pytest.raises(RuntimeError, match=re.escape(f"Cribl service is running but returned an error (status code: {mock_response.status_code}).")):
-            ingestor.check_docker_running()
+            ingestor.check_cribl_health()
 
     with patch("requests.get", side_effect=requests.exceptions.ConnectionError):
         with pytest.raises(ConnectionError, match=f"Docker or Cribl service is not running. Ensure Docker is running "
                                                   f"and Cribl is accessible at {base_url}"):
-            ingestor.check_docker_running()
+            ingestor.check_cribl_health()
 
     with patch("requests.get", side_effect=requests.exceptions.Timeout):
         with pytest.raises(TimeoutError, match=f"Request to {base_url} timed out. Error: .*"):
-            ingestor.check_docker_running()
+            ingestor.check_cribl_health()
 
     with patch("requests.get", side_effect=requests.exceptions.RequestException):
         with pytest.raises(RuntimeError, match=f"An unexpected error occurred: .*"):
-            ingestor.check_docker_running()
+            ingestor.check_cribl_health()
 
 
 def test_get_cribl_authtoken(ingestor):
     # Mock the requests.request method to raise a ConnectionError
-    with patch("requests.request", side_effect=requests.exceptions.RequestException):
+    with patch("requests.post", side_effect=requests.exceptions.RequestException):
         with pytest.raises(RuntimeError, match="Failed to get Cribl auth token. Error: .*"):
             ingestor.get_cribl_authtoken()
 

@@ -39,7 +39,7 @@ from pydantic import BaseModel
 
 from cribl_utilities_cli.rest_utilities import (
     environment_variables,
-    docker_running,
+    cribl_health,
     get_cribl_authentication_token,
     post_new_database_connection,
     post_new_input,
@@ -72,16 +72,24 @@ def load_examples(files: List[str]) -> tuple[dict, dict]:
     """
 
     def load_and_format(file_path: str) -> dict:
-        if not os.path.exists(file_path):
-            raise FileNotFoundError(f"File not found at: {file_path}")
-        try:
-            with open(file_path) as f:
-                tmp = f.read()
-                tmp = re.sub(r"\\\n", " ", tmp)
-                tmp_formatted = re.sub(r"(\s*=\s*)(.*)", r"\1'''\2'''", tmp)
-                tomli_db_inputs = dict(tomli.loads(tmp_formatted).items())
-        except Exception as e:
-            raise ValueError(f"Error loading file: {file_path}. Error: {e}")
+        file_name = os.path.basename(file_path)
+        folder_path = os.path.dirname(file_path)
+        folder_name = os.path.basename(folder_path)
+
+        if not os.path.exists(folder_path):
+            raise NotADirectoryError(
+                f"Folder not found: {folder_name}. Make sure the folder '{folder_name}' exists."
+            )
+        elif not os.path.exists(file_path):
+            raise FileNotFoundError(f"File not found: {file_name}. "
+                                    f"Make sure {file_name} exists and it is in {folder_name} folder.")
+
+        with open(file_path) as f:
+            tmp = f.read()
+            tmp = re.sub(r"\\\n", " ", tmp)
+            tmp_formatted = re.sub(r"(\s*=\s*)(.*)", r"\1'''\2'''", tmp)
+            tomli_db_inputs = dict(tomli.loads(tmp_formatted).items())
+
         return tomli_db_inputs
 
     # Load and parse each file
@@ -134,8 +142,8 @@ class Ingestor:
     def check_environment_variables(self) -> None:
         return environment_variables()
 
-    def check_docker_running(self, base_url: str = os.environ["BASE_URL"]) -> str:
-        return docker_running(base_url=base_url)
+    def check_cribl_health(self, base_url: str = os.getenv("BASE_URL", "http://localhost:19000")) -> str:
+        return cribl_health(base_url=base_url)
 
     def get_cribl_authtoken(self, base_url: str = os.getenv("BASE_URL", "http://localhost:19000")) -> None:
         self.token = get_cribl_authentication_token(base_url=base_url)
@@ -495,7 +503,7 @@ class Ingestor:
             connection_data = {
                 "id": (
                     f"{os.getenv('DBCONN_PREFIX', '') + '-' if os.getenv('DBCONN_PREFIX', '') else ''}"
-                    f"{key}-{uuid4() if os.getenv('DBCONN_PREFIX', '') == '{guid}' else os.getenv('DBCONN_PREFIX', '')}"
+                    f"{key}-{uuid4() if os.getenv('DBCONN_SUFFIX', '') == '{guid}' else os.getenv('DBCONN_SUFFIX', '')}"
                 ),
                 "databaseType": row.get("connection_type"),
                 "username": row.get("username"),
@@ -517,7 +525,7 @@ class Ingestor:
                 connection_data["configObj"] = row.get("configObj")
             if "customizedJdbcUrl" in row:
                 connection_data["connectionString"] = row.get("customizedJdbcUrl")
-            print("CONNECTION DATA :", connection_data)
+            #print("CONNECTION DATA :", connection_data)
             connections_obj.append(ConnectionSchema(**connection_data))
 
         self.connection = connections_obj
