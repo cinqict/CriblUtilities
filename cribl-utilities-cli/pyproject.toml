@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "cribl-utilities-cli"
-version = "0.1.6"
+version = "0.1.7"
 description = "A CLI tool to interact with Cribl"
 authors = ["CINQ ICT <info@cinqict.nl>"]
 readme = "README.md"
