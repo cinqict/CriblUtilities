@@ -43,7 +43,9 @@ if sys.version_info < (3, 13):
 else:
     # Now we can use the Ingestor class to load the examples files
     local_ingestor = Ingestor()
-    
+
+    local_ingestor.check_environment_variables()
+    local_ingestor.check_cribl_health()
     local_ingestor.get_cribl_authtoken()
     
     inputs = local_ingestor.load_input()
