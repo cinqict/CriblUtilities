@@ -57,7 +57,7 @@ def environment_variables() -> None:
 
 
 def cribl_health(base_url: str = os.environ["BASE_URL"]) -> str:
-    """Checks if Docker is running and Cribl is accessible."""
+    """Checks if Cribl is accessible."""
     try:
         response = requests.get(base_url)
         if response.status_code != 200:
@@ -66,7 +66,7 @@ def cribl_health(base_url: str = os.environ["BASE_URL"]) -> str:
     except requests.exceptions.ConnectionError:
         logging.error("Connection error occurred:\n" + traceback.format_exc())
         raise ConnectionError(
-            f"Docker or Cribl service is not running. Ensure Docker is running and Cribl is accessible at {base_url}"
+            f"Cribl service is not running or not accesible at the provided url: {base_url}"
         )
     except requests.exceptions.Timeout as e:
         raise TimeoutError(f"Request to {base_url} timed out. Error: {e}")

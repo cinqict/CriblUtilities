@@ -45,7 +45,7 @@ else:
     local_ingestor = Ingestor()
 
     local_ingestor.check_environment_variables()
-    local_ingestor.check_docker_running()
+    local_ingestor.check_cribl_health()
     local_ingestor.get_cribl_authtoken()
     
     inputs = local_ingestor.load_input()

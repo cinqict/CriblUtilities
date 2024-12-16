@@ -62,8 +62,7 @@ def test_check_cribl_health(ingestor):
             ingestor.check_cribl_health()
 
     with patch("requests.get", side_effect=requests.exceptions.ConnectionError):
-        with pytest.raises(ConnectionError, match=f"Docker or Cribl service is not running. Ensure Docker is running "
-                                                  f"and Cribl is accessible at {base_url}"):
+        with pytest.raises(ConnectionError, match=f"Cribl service is not running or not accesible at the provided url: {base_url}"):
             ingestor.check_cribl_health()
 
     with patch("requests.get", side_effect=requests.exceptions.Timeout):
