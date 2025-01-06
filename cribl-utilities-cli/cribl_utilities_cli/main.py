@@ -221,7 +221,8 @@ def run_all(
         save_trace_to_file: bool = False,
 ):
     """
-    Run all the commands in order (print_inputs_config, post_inputs, print_connections_config, post_connections)
+    Check the environment variables, Cribl health, get the Cribl auth token, load and post inputs and connections,
+    and save the trace to a file
 
     folder_name : str - The name of the folder where the inputs are stored
 

@@ -1,6 +1,6 @@
 # `cribl-utilities-cli`
 
-This is the main command line interface for the cribl-utilities CLI
+This is the main command line interface for the cribl-utilities CLI.
 
 **Usage**:
 
@@ -16,14 +16,14 @@ $ cribl-utilities-cli [OPTIONS] COMMAND [ARGS]...
 
 **Commands**:
 
-* `check-version`: Check the version of the cribl-utilities CLI
-* `example-env`: Print an example .env file
-* `check-cribl-health`: Check the health of the Cribl instance
-* `check-connection`: Check the connection to the Cribl instance
-* `print-inputs-config`: Load the inputs from the chosen folder
-* `post-inputs`: Post the inputs to the Cribl instance
-* `print-connections-config`: Load the connections from the examples folder
-* `post-connections`: Post the connections to the Cribl instance
+* `check-version`: Check the version of the cribl-utilities CLI.
+* `example-env`: Print an example .env file.
+* `check-cribl-health`: Check the health of the Cribl instance.
+* `check-connection`: Check the connection to the Cribl instance.
+* `print-inputs-config`: Load the inputs from the chosen folder.
+* `post-inputs`: Post the inputs to the Cribl instance.
+* `print-connections-config`: Load the connections from the examples folder.
+* `post-connections`: Post the connections to the Cribl instance.
 * `run-all`: Run all the commands in order...
 
 ## `cribl-utilities-cli check-version`
@@ -42,7 +42,7 @@ $ cribl-utilities-cli check-version [OPTIONS]
 
 ## `cribl-utilities-cli example-env`
 
-Print an example .env file
+Print an example .env file.
 
 **Usage**:
 
@@ -52,11 +52,11 @@ $ cribl-utilities-cli example-env [OPTIONS]
 
 **Options**:
 
-* `--help`: Show this message and exit.
+* `--help`: Show this help message and exit.
 
 ## `cribl-utilities-cli check-cribl-health`
 
-Check the health of the Cribl instance
+Check the health of the Cribl instance.
 
 **Usage**:
 
@@ -66,11 +66,11 @@ $ cribl-utilities-cli check-cribl-health [OPTIONS]
 
 **Options**:
 
-* `--help`: Show this message and exit.
+* `--help`: Show this help message and exit.
 
 ## `cribl-utilities-cli check-connection`
 
-Check the connection to the Cribl instance
+Check the connection to the Cribl instance.
 
 **Usage**:
 
@@ -80,17 +80,11 @@ $ cribl-utilities-cli check-connection [OPTIONS]
 
 **Options**:
 
-* `--help`: Show this message and exit.
+* `--help`: Show this help message and exit.
 
 ## `cribl-utilities-cli print-inputs-config`
 
-Load the inputs from the chosen folder
-
-folder_name : str - The name of the folder where the inputs are stored
-
-file_names : list | None - The names of the files to load (be aware that order matters
-first file should be the inputs.conf file, second file should be the connections.conf file)
-If None, defaults to [&#x27;db_inputs.conf&#x27;, &#x27;db_connections.conf&#x27;]
+Load the inputs from the chosen folder and print them to the console.
 
 **Usage**:
 
@@ -100,22 +94,22 @@ $ cribl-utilities-cli print-inputs-config [OPTIONS] FOLDER_NAME
 
 **Arguments**:
 
-* `FOLDER_NAME`: [required]
+* `FOLDER_NAME`: [required] (str)  
+   The name of the folder where the inputs are stored.
 
 **Options**:
 
-* `--file-names TEXT`
-* `--help`: Show this message and exit.
+* `--file-names TEXT`: (list | None)  
+    A list of file names to load. The order of the files is important:  
+    * The first file should be the inputs.conf file.  
+    * The second file should be the connections.conf file.  
+    * If no files are specified, the default is ['db_inputs.conf', 'db_connections.conf'].  
+  
+* `--help`: Show this help message and exit.  
 
 ## `cribl-utilities-cli post-inputs`
 
-Post the inputs to the Cribl instance
-
-folder_name : str - The name of the folder where the inputs are stored
-
-file_names : list | None - The names of the files to load (be aware that order matters
-first file should be the inputs.conf file, second file should be the connections.conf file)
-If None, defaults to [&#x27;db_inputs.conf&#x27;, &#x27;db_connections.conf&#x27;]
+Post the inputs to the Cribl instance and print their ids to the console.  
 
 **Usage**:
 
@@ -125,22 +119,22 @@ $ cribl-utilities-cli post-inputs [OPTIONS] FOLDER_NAME
 
 **Arguments**:
 
-* `FOLDER_NAME`: [required]
+* `FOLDER_NAME`: [required] (str)  
+   The name of the folder where the inputs are stored.
 
 **Options**:
 
-* `--file-names TEXT`
-* `--help`: Show this message and exit.
+* `--file-names TEXT`: (list | None)  
+    A list of file names to load. The order of the files is important:  
+    * The first file should be the inputs.conf file.  
+    * The second file should be the connections.conf file.  
+    * If no files are specified, the default is ['db_inputs.conf', 'db_connections.conf'].  
+  
+* `--help`: Show this help message and exit.
 
 ## `cribl-utilities-cli print-connections-config`
 
-Load the connections from the examples folder
-
-folder_name : str - The name of the folder where the inputs are stored
-
-file_names : list | None - The names of the files to load (be aware that order matters
-first file should be the inputs.conf file, second file should be the connections.conf file)
-If None, defaults to [&#x27;db_inputs.conf&#x27;, &#x27;db_connections.conf&#x27;]
+Load the connections from the examples folder and print them to the console.
 
 **Usage**:
 
@@ -150,22 +144,22 @@ $ cribl-utilities-cli print-connections-config [OPTIONS] FOLDER_NAME
 
 **Arguments**:
 
-* `FOLDER_NAME`: [required]
+* `FOLDER_NAME`: [required] (str)  
+   The name of the folder where the inputs are stored.
 
 **Options**:
 
-* `--file-names TEXT`
-* `--help`: Show this message and exit.
+* `--file-names TEXT`: (list | None)  
+    A list of file names to load. The order of the files is important:  
+    * The first file should be the inputs.conf file.  
+    * The second file should be the connections.conf file.  
+    * If no files are specified, the default is ['db_inputs.conf', 'db_connections.conf'].  
+* `--help`: 
+  Show this help message and exit.
 
 ## `cribl-utilities-cli post-connections`
 
-Post the connections to the Cribl instance
-
-folder_name : str - The name of the folder where the inputs are stored
-
-file_names : list | None - The names of the files to load (be aware that order matters
-first file should be the inputs.conf file, second file should be the connections.conf file)
-If None, defaults to [&#x27;db_inputs.conf&#x27;, &#x27;db_connections.conf&#x27;]
+Post the connections to the Cribl instance and print their ids to the console.
 
 **Usage**:
 
@@ -175,24 +169,22 @@ $ cribl-utilities-cli post-connections [OPTIONS] FOLDER_NAME
 
 **Arguments**:
 
-* `FOLDER_NAME`: [required]
+* `FOLDER_NAME`: [required] (str)  
+   The name of the folder where the inputs are stored.
 
 **Options**:
 
-* `--file-names TEXT`
-* `--help`: Show this message and exit.
+* `--file-names TEXT`: (list | None)  
+    A list of file names to load. The order of the files is important:  
+    * The first file should be the inputs.conf file.  
+    * The second file should be the connections.conf file.  
+    * If no files are specified, the default is ['db_inputs.conf', 'db_connections.conf'].  
+  
+* `--help`: Show this help message and exit.
 
 ## `cribl-utilities-cli run-all`
 
-Run all the commands in order (print_inputs_config, post_inputs, print_connections_config, post_connections)
-
-folder_name : str - The name of the folder where the inputs are stored
-
-file_names : list | None - The names of the files to load (be aware that order matters
-first file should be the inputs.conf file, second file should be the connections.conf file)
-If None, defaults to [&#x27;db_inputs.conf&#x27;, &#x27;db_connections.conf&#x27;]
-
-save_trace_to_file : bool - If True, saves the trace to a file
+Check the environment variables, Cribl health, get the Cribl auth token, load and post inputs and connections, and save the trace to a file.  
 
 **Usage**:
 
@@ -202,10 +194,18 @@ $ cribl-utilities-cli run-all [OPTIONS] FOLDER_NAME
 
 **Arguments**:
 
-* `FOLDER_NAME`: [required]
+* `FOLDER_NAME`: [required] (str)  
+   The name of the folder where the inputs are stored.
 
 **Options**:
 
-* `--file-names TEXT`
-* `--save-trace-to-file / --no-save-trace-to-file`: [default: no-save-trace-to-file]
-* `--help`: Show this message and exit.
+* `--file-names TEXT`: (list | None)  
+    A list of file names to load. The order of the files is important:  
+    * The first file should be the inputs.conf file.  
+    * The second file should be the connections.conf file.  
+    * If no files are specified, the default is ['db_inputs.conf', 'db_connections.conf'].  
+  
+* `--save-trace-to-file / --no-save-trace-to-file`: [default: no-save-trace-to-file] (bool)
+    If True, saves the trace to a file.
+
+* `--help`: Show this help message and exit.
