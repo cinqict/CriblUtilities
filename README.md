@@ -13,6 +13,9 @@ To do this we will make:
 - `docker compose up -d`
   - login and update admin password (default is `admin` and `admin`)
 - `pip install -r requirements.txt`
+- Example code without cli:
+  - `cd cribl-utilities-cli`
+  - `python example_usage_without_cli.py`
 
 ## To serve the docs
 - `mkdocs serve`
