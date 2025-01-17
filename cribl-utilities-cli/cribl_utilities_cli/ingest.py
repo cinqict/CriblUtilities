@@ -41,6 +41,7 @@ from cribl_utilities_cli.rest_utilities import (
     environment_variables,
     cribl_health,
     get_cribl_authentication_token,
+    yaml_lint,
     post_new_database_connection,
     post_new_input,
 )
@@ -131,6 +132,7 @@ class Ingestor:
         examples_folder: str = "examples",
     ):
         self.examples_folder = examples_folder
+        self.cribl_config_folder = None
         self.identities = None
         self.token = None
         self.connection = None
@@ -147,6 +149,9 @@ class Ingestor:
 
     def get_cribl_authtoken(self, base_url: str = os.getenv("BASE_URL", "http://localhost:19000")) -> None:
         self.token = get_cribl_authentication_token(base_url=base_url)
+
+    def check_yaml_lint(self) -> dict:
+        return yaml_lint(self.cribl_config_folder)
 
     def merge_examples_input(self, file_names: list | None = None) -> dict:
         """
@@ -525,7 +530,6 @@ class Ingestor:
                 connection_data["configObj"] = row.get("configObj")
             if "customizedJdbcUrl" in row:
                 connection_data["connectionString"] = row.get("customizedJdbcUrl")
-            #print("CONNECTION DATA :", connection_data)
             connections_obj.append(ConnectionSchema(**connection_data))
 
         self.connection = connections_obj

@@ -87,6 +87,24 @@ def check_connection():
 
 
 @app.command()
+def check_yaml_files(cribl_folder: str):
+    """
+    Check the files in the folder
+
+    folder_name : str - The name of the folder where the inputs are stored
+
+    file_names : list[str] | None - The names of the files to load (be aware that order matters
+    first file should be the inputs.conf file, second file should be the connections.conf file)
+    If None, defaults to ['db_inputs.conf', 'db_connections.conf']
+
+    """
+    local_ingestor = Ingestor()
+    local_ingestor.cribl_config_folder = cribl_folder
+    typer.echo(local_ingestor.check_yaml_lint())
+    typer.echo("Files checked successfully! \n")
+
+
+@app.command()
 def print_inputs_config(folder_name: str, file_names: list[str] | None = None):
     """
     Load the inputs from the chosen folder
@@ -110,6 +128,7 @@ def print_inputs_config(folder_name: str, file_names: list[str] | None = None):
     for input_id in inputs_ids:
         typer.echo(f"- {input_id}")
     typer.echo("\n")
+
 
 @app.command()
 def post_inputs(folder_name: str, file_names: list[str] | None = None):
@@ -174,6 +193,7 @@ def print_connections_config(folder_name: str, file_names: list[str] | None = No
         typer.echo(f"- {connection_id}")
     typer.echo("\n")
 
+
 @app.command()
 def post_connections(folder_name: str, file_names: list[str] | None = None):
     """
@@ -215,7 +235,7 @@ def post_connections(folder_name: str, file_names: list[str] | None = None):
 
 
 @app.command()
-def run_all(
+def migrate_database(
         folder_name: str,
         file_names: list[str] | None = None,
         save_trace_to_file: bool = False,

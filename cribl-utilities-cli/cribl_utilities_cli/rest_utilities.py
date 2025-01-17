@@ -34,6 +34,9 @@ import os
 from dotenv import load_dotenv, find_dotenv
 import logging
 import traceback
+from yamllint import linter
+from yamllint.config import YamlLintConfig
+import glob
 
 _ = load_dotenv(find_dotenv())
 
@@ -116,6 +119,43 @@ def get_cribl_authentication_token(base_url: str = os.getenv("BASE_URL", "http:/
 
     return token
 
+
+def yaml_lint(cribl_config_folder: str) -> dict:
+    """Checks if the YAML files in the Cribl config folder are valid.
+    """
+    def is_valid_yaml(path_file: str) -> bool:
+        with open(path_file, 'r') as file:
+            yaml_content = file.read()
+        config_content = """
+            extends: relaxed
+            rules:
+              # Disable all rules except basic syntax validation
+              indentation: disable
+              line-length: disable
+              trailing-spaces: disable
+              new-line-at-end-of-file: disable
+              empty-lines: disable
+              comments-indentation: disable
+              comments: disable
+              colons: disable
+              document-start: disable
+              hyphens: disable
+              brackets: disable
+            """
+        config = YamlLintConfig(config_content)
+        lint_result = linter.run(yaml_content, config)
+        return not any(lint_result)  # Returns True if no linting errors
+
+    def check_yaml_files_in_folder(base_path):
+        yaml_files = glob.glob(os.path.join(base_path, 'groups', '*', 'local', '**', '*.yml'), recursive=True)
+        valid_yaml = {}
+        for yaml_file in yaml_files:
+            valid_yaml[yaml_file] = is_valid_yaml(yaml_file)
+
+        return valid_yaml
+
+    results = check_yaml_files_in_folder(cribl_config_folder)
+    return results
 
 def post_new_database_connection(
     base_url: str = os.getenv("BASE_URL", "http://localhost:19000"),

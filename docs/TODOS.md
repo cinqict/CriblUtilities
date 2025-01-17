@@ -20,3 +20,17 @@ MkDocs is free and easy to use. It is a static site generator that's geared towa
 - [✓] write documentation for the ingestor class (make sure your docstrings are good)
 - [✓] create a cli (using Typer) that uses the ingestor class to post to the Cribl API
 - [ ] create a Dockerfile that uses the cli to post to the Cribl API and publish it to Docker Hub
+- [✓] CLI command 'cribl-utilities-cli migrate-database': 
+  - does the same as the current run-all
+- [ ] re structure cli  to move the commands out of main.py into separate modules (e.g., commands/), so we use commands and subcommands add in main:  
+      app.add_typer(command1.app, name="command1")  
+      cribl-utilities-cli command1 function1]
+- [ ] CLI command 'cribl-utilities-cli environmentvalues -key value':
+  - Remove the dotenv import and function call
+  - Windows: for /f "tokens=1,2 delims==" %i in (my_env_file.txt) do set %i=%j
+  python script.py
+  -  macOS/Linux: source my_env_file.txt (export command)
+- [ ] CLI command 'cribl-utitilies-cli setup': add env variables manually one by one
+- [ ] CLI command 'cribl-utilities-check-files': checks if expected files are adhering to YAML linting. Basic sintax validation
+- [ ] CLI command 'cribl-utilities-cli check-naming -conf': see docs. Check regex naming convention.
+- 
