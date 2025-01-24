@@ -42,6 +42,7 @@ from cribl_utilities_cli.rest_utilities import (
     cribl_health,
     get_cribl_authentication_token,
     yaml_lint,
+    regex_convention,
     post_new_database_connection,
     post_new_input,
 )
@@ -153,6 +154,9 @@ class Ingestor:
     def check_yaml_lint(self) -> dict:
         return yaml_lint(self.cribl_config_folder)
 
+    def check_naming_regex(self, field: str, regex_pattern: str, exceptions: list[str] = None) -> None:
+        return regex_convention(cribl_config_folder=self.cribl_config_folder, field=field,
+                                regex_pattern=regex_pattern, exceptions=exceptions)
     def merge_examples_input(self, file_names: list | None = None) -> dict:
         """
 

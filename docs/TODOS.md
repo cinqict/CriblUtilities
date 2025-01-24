@@ -31,6 +31,5 @@ MkDocs is free and easy to use. It is a static site generator that's geared towa
   python script.py
   -  macOS/Linux: source my_env_file.txt (export command)
 - [ ] CLI command 'cribl-utitilies-cli setup': add env variables manually one by one
-- [ ] CLI command 'cribl-utilities-check-files': checks if expected files are adhering to YAML linting. Basic sintax validation
+- [✓] CLI command 'cribl-utilities-check-files': checks if expected files are adhering to YAML linting. Basic syntax validation
 - [ ] CLI command 'cribl-utilities-cli check-naming -conf': see docs. Check regex naming convention.
-- 

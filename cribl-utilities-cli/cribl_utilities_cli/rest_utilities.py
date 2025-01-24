@@ -30,6 +30,8 @@
 
 import requests
 import json
+import yaml
+import re
 import os
 from dotenv import load_dotenv, find_dotenv
 import logging
@@ -156,6 +158,45 @@ def yaml_lint(cribl_config_folder: str) -> dict:
 
     results = check_yaml_files_in_folder(cribl_config_folder)
     return results
+
+def regex_convention(cribl_config_folder: str, field: str, regex_pattern: str, exceptions: list[str] = None) -> None:
+    #check in local/cribl/groups.yml, <groupname> is the highest level key. Don't check default or default_fleet
+    # Construct the full path to the YAML file
+    if field == 'workergroup':
+        yaml_relative_path = 'local/cribl/groups.yml'
+        full_paths = os.path.join(cribl_config_folder, yaml_relative_path)
+        matching_paths = glob.glob(full_paths)
+    elif field == 'sources':
+        yaml_relative_path = os.path.join(cribl_config_folder, 'groups', '*', 'local', 'cribl', 'inputs.yml')
+        matching_paths = glob.glob(yaml_relative_path)
+        print("full paths ", yaml_relative_path)
+        print("matching paths ", matching_paths)
+    else:
+        raise ValueError("Field not supported")
+
+    for yaml_full_path in matching_paths:
+        # Read the YAML file
+        try:
+            with open(yaml_full_path, 'r') as file:
+                data = yaml.safe_load(file)
+        except FileNotFoundError:
+            print(f"Error: File not found at {yaml_full_path}")
+            return
+        except yaml.YAMLError as e:
+            print(f"Error parsing YAML file: {e}")
+            return
+
+        # Filter out the fields to be excluded
+        excluded_fields = exceptions[0].split(',')
+        print('excluded_fields',excluded_fields)
+        filtered_fields = [field for field in data if field not in excluded_fields]
+
+        # Validate fields against the regex
+        for field in filtered_fields:
+            if re.match(regex_pattern, field):
+                print(f"'{field}' matches the pattern.")
+            else:
+                print(f"'{field}' does NOT match the pattern.")
 
 def post_new_database_connection(
     base_url: str = os.getenv("BASE_URL", "http://localhost:19000"),

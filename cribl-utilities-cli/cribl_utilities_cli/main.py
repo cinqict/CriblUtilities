@@ -85,23 +85,46 @@ def check_connection():
     local_ingestor.get_cribl_authtoken()
     typer.echo(f"Connection successful! Token: {local_ingestor.token}\n")
 
-
 @app.command()
-def check_yaml_files(cribl_folder: str):
+def check_yaml_files(conf: str = typer.Option(..., help="cribl-config folder where the YAML files are stored")):
     """
-    Check the files in the folder
+    Checks if expected files are adhering to YAML linting. Basic syntax validation
 
-    folder_name : str - The name of the folder where the inputs are stored
-
-    file_names : list[str] | None - The names of the files to load (be aware that order matters
-    first file should be the inputs.conf file, second file should be the connections.conf file)
-    If None, defaults to ['db_inputs.conf', 'db_connections.conf']
+    conf : str - The cribl-config folder where the YAML files are stored
 
     """
     local_ingestor = Ingestor()
-    local_ingestor.cribl_config_folder = cribl_folder
-    typer.echo(local_ingestor.check_yaml_lint())
+    local_ingestor.cribl_config_folder = conf
+    for key, value in local_ingestor.check_yaml_lint().items():
+        if value:
+            typer.echo("File: " + key + " VALID\n")
+        else:
+            typer.echo("File: " + key + " NOT VALID\n")
     typer.echo("Files checked successfully! \n")
+
+
+@app.command()
+def check_naming_regex(conf: str = typer.Option(..., help="cribl-config folder where the YAML files are stored"),
+                       field: str = typer.Option(..., help="Field to check naming convention for in the YAML files"),
+                       regex: str = typer.Option(..., help="Regex to check the field against"),
+                       exceptions: list[str] = typer.Option(None, help="List of exceptions to the naming convention")):
+    """
+    Check the naming convention of the field in the YAML files
+
+    Parameters
+    ----------
+    conf : str - The cribl-config folder where the YAML files are stored
+    field : str - Field to check naming convention for in the YAML files
+    regex : str - Regex to check the field against
+    exceptions : list[str] - List of exceptions to the naming convention
+
+    Returns
+    -------
+
+    """
+    local_ingestor = Ingestor()
+    local_ingestor.cribl_config_folder = conf
+    typer.echo(local_ingestor.check_naming_regex(field, regex, exceptions))
 
 
 @app.command()
