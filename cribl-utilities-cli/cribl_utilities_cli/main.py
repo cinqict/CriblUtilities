@@ -106,7 +106,7 @@ def check_yaml_files(conf: str = typer.Option(..., help="cribl-config folder whe
 @app.command()
 def check_naming_regex(conf: str = typer.Option(..., help="cribl-config folder where the YAML files are stored"),
                        field: str = typer.Option(..., help="Field to check naming convention for in the YAML files"),
-                       regex: str = typer.Option(..., help="Regex to check the field against"),
+                       regex: str = typer.Option(None, help="Regex to check the field against"),
                        exceptions: list[str] = typer.Option(None, help="List of exceptions to the naming convention")):
     """
     Check the naming convention of the field in the YAML files
@@ -126,6 +126,27 @@ def check_naming_regex(conf: str = typer.Option(..., help="cribl-config folder w
     local_ingestor.cribl_config_folder = conf
     typer.echo(local_ingestor.check_naming_regex(field, regex, exceptions))
 
+@app.command()
+def setup():
+    """
+    Setup the CLI
+    """
+    # Dictionary to store user inputs
+    user_data = {}
+
+    # Questions to ask the user
+    questions = [
+        ("age", "What is your age?"),
+        ("gender", "What is your gender?"),
+        ("nationality", "What is your nationality?"),
+    ]
+
+    # Prompt the user for each question
+    for key, question in questions:
+        answer = typer.prompt(question)
+        user_data[key] = answer
+
+    typer.echo(user_data)
 
 @app.command()
 def print_inputs_config(folder_name: str, file_names: list[str] | None = None):

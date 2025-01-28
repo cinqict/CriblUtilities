@@ -154,7 +154,7 @@ class Ingestor:
     def check_yaml_lint(self) -> dict:
         return yaml_lint(self.cribl_config_folder)
 
-    def check_naming_regex(self, field: str, regex_pattern: str, exceptions: list[str] = None) -> None:
+    def check_naming_regex(self, field: str, regex_pattern: str = None, exceptions: list[str] = None) -> None:
         return regex_convention(cribl_config_folder=self.cribl_config_folder, field=field,
                                 regex_pattern=regex_pattern, exceptions=exceptions)
     def merge_examples_input(self, file_names: list | None = None) -> dict:

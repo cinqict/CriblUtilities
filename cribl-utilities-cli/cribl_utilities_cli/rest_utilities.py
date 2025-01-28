@@ -79,7 +79,6 @@ def cribl_health(base_url: str = os.environ["BASE_URL"]) -> str:
         raise RuntimeError(f"An unexpected error occurred: {e}")
 
 
-
 def get_cribl_authentication_token(base_url: str = os.getenv("BASE_URL", "http://localhost:19000")) -> str:
     """Returns the auth token for the Cribl instance.
 
@@ -125,6 +124,7 @@ def get_cribl_authentication_token(base_url: str = os.getenv("BASE_URL", "http:/
 def yaml_lint(cribl_config_folder: str) -> dict:
     """Checks if the YAML files in the Cribl config folder are valid.
     """
+
     def is_valid_yaml(path_file: str) -> bool:
         with open(path_file, 'r') as file:
             yaml_content = file.read()
@@ -159,22 +159,55 @@ def yaml_lint(cribl_config_folder: str) -> dict:
     results = check_yaml_files_in_folder(cribl_config_folder)
     return results
 
-def regex_convention(cribl_config_folder: str, field: str, regex_pattern: str, exceptions: list[str] = None) -> None:
-    #check in local/cribl/groups.yml, <groupname> is the highest level key. Don't check default or default_fleet
-    # Construct the full path to the YAML file
+
+def regex_convention(cribl_config_folder: str, field: str, regex_pattern: str = None,
+                     exceptions: list[str] = None) -> None:
+    """Checks if the fields in the YAML files in the Cribl config folder match the regex pattern.
+
+    Parameters
+    ----------
+    cribl_config_folder : str
+        The path to the Cribl config folder.
+    field : str
+        The field to check. Supported fields are 'workergroup', 'sources', 'destinations', 'dataroutes', 'pipelines', and 'packs'.
+    regex_pattern : str
+        The regex pattern to match against the fields.
+    exceptions : list[str]
+        The fields to exclude from the check.
+
+    """
     if field == 'workergroup':
         yaml_relative_path = 'local/cribl/groups.yml'
         full_paths = os.path.join(cribl_config_folder, yaml_relative_path)
         matching_paths = glob.glob(full_paths)
     elif field == 'sources':
-        yaml_relative_path = os.path.join(cribl_config_folder, 'groups', '*', 'local', 'cribl', 'inputs.yml')
-        matching_paths = glob.glob(yaml_relative_path)
-        print("full paths ", yaml_relative_path)
-        print("matching paths ", matching_paths)
+        full_paths = os.path.join(cribl_config_folder, 'groups', '*', 'local', 'cribl', 'inputs.yml')
+        matching_paths = glob.glob(full_paths)
+        print("full paths ", matching_paths)
+    elif field == 'destinations':
+        full_paths = os.path.join(cribl_config_folder, 'groups', '*', 'local', 'cribl', 'outputs.yml')
+        matching_paths = glob.glob(full_paths)
+        print("full paths ", matching_paths)
+    elif field == 'dataroutes':
+        full_paths = os.path.join(cribl_config_folder, 'groups', '*', 'local', 'cribl', 'pipelines', 'route.yml')
+        # Every name of routes
+        matching_paths = glob.glob(full_paths)
+        print("full paths ", matching_paths)
+    elif field == 'pipelines':
+        full_paths = os.path.join(cribl_config_folder, 'groups', '*', 'local', 'cribl', 'pipelines', '*')
+        # name of the folder
+        matching_paths = glob.glob(full_paths)
+        print("full paths ", matching_paths)
+    elif field == 'packs':
+        full_paths = os.path.join(cribl_config_folder, 'groups', '*', 'default', '*', 'groups', '*', 'local', '*')
+        # name of the folder
+        matching_paths = glob.glob(full_paths)
+        print("full paths ", matching_paths)
     else:
         raise ValueError("Field not supported")
 
     for yaml_full_path in matching_paths:
+        print('File: ', yaml_full_path)
         # Read the YAML file
         try:
             with open(yaml_full_path, 'r') as file:
@@ -186,23 +219,42 @@ def regex_convention(cribl_config_folder: str, field: str, regex_pattern: str, e
             print(f"Error parsing YAML file: {e}")
             return
 
+        if field == 'sources' and 'inputs' in data:
+            data = data['inputs']
+        elif field == 'destinations' and 'outputs' in data:
+            data = data['outputs']
+        elif field == 'dataroutes' and 'routes' in data:
+            data = data['routes']
+        elif field == 'pipelines':
+            #name of the folder
+            data = [os.path.basename(yaml_full_path)]
+        elif field == 'packs':
+            #name of the folder
+            data = [os.path.basename(yaml_full_path)]
+
         # Filter out the fields to be excluded
-        excluded_fields = exceptions[0].split(',')
-        print('excluded_fields',excluded_fields)
+        excluded_fields = exceptions[0].split(',') if exceptions else []
+        print('excluded_fields', excluded_fields)
+
         filtered_fields = [field for field in data if field not in excluded_fields]
+        print('filtered_fields', filtered_fields)
 
         # Validate fields against the regex
+        if not regex_pattern:
+            print("No regex pattern provided.")
+            return
         for field in filtered_fields:
             if re.match(regex_pattern, field):
                 print(f"'{field}' matches the pattern.")
             else:
                 print(f"'{field}' does NOT match the pattern.")
 
+
 def post_new_database_connection(
-    base_url: str = os.getenv("BASE_URL", "http://localhost:19000"),
-    payload: dict = None,
-    cribl_authtoken: str = "",
-    cribl_workergroup_name: str = os.getenv("CRIBL_WORKERGROUP_NAME", "default"),
+        base_url: str = os.getenv("BASE_URL", "http://localhost:19000"),
+        payload: dict = None,
+        cribl_authtoken: str = "",
+        cribl_workergroup_name: str = os.getenv("CRIBL_WORKERGROUP_NAME", "default"),
 ) -> dict:
     """Posts a new database connection to the Cribl instance.
 
@@ -239,10 +291,10 @@ def post_new_database_connection(
 
 
 def post_new_input(
-    base_url: str = os.getenv("BASE_URL", "http://localhost:19000"),
-    payload: dict = None,
-    cribl_authtoken: str = "",
-    cribl_workergroup_name: str = os.getenv("CRIBL_WORKERGROUP_NAME", "default"),
+        base_url: str = os.getenv("BASE_URL", "http://localhost:19000"),
+        payload: dict = None,
+        cribl_authtoken: str = "",
+        cribl_workergroup_name: str = os.getenv("CRIBL_WORKERGROUP_NAME", "default"),
 ) -> dict:
     """Posts a new input to the Cribl instance.
 
