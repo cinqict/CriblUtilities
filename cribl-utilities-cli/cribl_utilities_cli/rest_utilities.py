@@ -160,6 +160,7 @@ def yaml_lint(cribl_config_folder: str) -> dict:
     return results
 
 
+
 def regex_convention(cribl_config_folder: str, field: str, regex_pattern: str = None,
                      exceptions: list[str] = None) -> None:
     """Checks if the fields in the YAML files in the Cribl config folder match the regex pattern.
@@ -196,59 +197,64 @@ def regex_convention(cribl_config_folder: str, field: str, regex_pattern: str = 
     elif field == 'pipelines':
         full_paths = os.path.join(cribl_config_folder, 'groups', '*', 'local', 'cribl', 'pipelines', '*')
         # name of the folder
-        matching_paths = glob.glob(full_paths)
+        matching_paths = [yaml_full_path for yaml_full_path in glob.glob(full_paths) if os.path.isdir(yaml_full_path)]
         print("full paths ", matching_paths)
     elif field == 'packs':
-        full_paths = os.path.join(cribl_config_folder, 'groups', '*', 'default', '*', 'groups', '*', 'local', '*')
+        full_paths = os.path.join(cribl_config_folder, 'groups', '*', 'default', '*')
         # name of the folder
-        matching_paths = glob.glob(full_paths)
+        matching_paths = [yaml_full_path for yaml_full_path in glob.glob(full_paths) if os.path.isdir(yaml_full_path)]
         print("full paths ", matching_paths)
     else:
         raise ValueError("Field not supported")
 
-    for yaml_full_path in matching_paths:
-        print('File: ', yaml_full_path)
-        # Read the YAML file
+    def open_yaml(yaml_full_path):
         try:
             with open(yaml_full_path, 'r') as file:
-                data = yaml.safe_load(file)
+                data_file = yaml.safe_load(file)
+            return data_file
         except FileNotFoundError:
             print(f"Error: File not found at {yaml_full_path}")
             return
         except yaml.YAMLError as e:
             print(f"Error parsing YAML file: {e}")
             return
-
-        if field == 'sources' and 'inputs' in data:
-            data = data['inputs']
-        elif field == 'destinations' and 'outputs' in data:
-            data = data['outputs']
-        elif field == 'dataroutes' and 'routes' in data:
-            data = data['routes']
+    data = []
+    for yaml_full_path in matching_paths:
+        print('File/folder: ', yaml_full_path)
+        # Read the YAML file or the foldernames
+        if field == 'workergroup':
+            data.append(list(open_yaml(yaml_full_path).keys()))
+        if field == 'sources' and 'inputs' in open_yaml(yaml_full_path):
+            data.append(list(open_yaml(yaml_full_path)['inputs'].keys()))
+        elif field == 'destinations' and 'outputs' in open_yaml(yaml_full_path):
+            data.append(list(open_yaml(yaml_full_path)['outputs'].keys()))
+        elif field == 'dataroutes' and 'routes' in open_yaml(yaml_full_path):
+            data.append([route['name'] for route in open_yaml(yaml_full_path)['routes']])
         elif field == 'pipelines':
             #name of the folder
-            data = [os.path.basename(yaml_full_path)]
+            data.append(os.path.basename(yaml_full_path))
         elif field == 'packs':
             #name of the folder
-            data = [os.path.basename(yaml_full_path)]
+            data.append(os.path.basename(yaml_full_path))
 
-        # Filter out the fields to be excluded
-        excluded_fields = exceptions[0].split(',') if exceptions else []
-        print('excluded_fields', excluded_fields)
+    #if field == 'pipelines' or field == 'packs':
+    data = [item for sublist in data for item in (sublist if isinstance(sublist, list) else [sublist])]
+    # Filter out the fields to be excluded
+    excluded_fields = exceptions[0].replace(' ','').split(',') if exceptions else []
+    print('excluded_fields', excluded_fields)
+    print('data', data)
+    filtered_fields = [field for field in data if field not in excluded_fields]
+    print('filtered_fields', filtered_fields)
 
-        filtered_fields = [field for field in data if field not in excluded_fields]
-        print('filtered_fields', filtered_fields)
-
-        # Validate fields against the regex
-        if not regex_pattern:
-            print("No regex pattern provided.")
-            return
-        for field in filtered_fields:
-            if re.match(regex_pattern, field):
-                print(f"'{field}' matches the pattern.")
-            else:
-                print(f"'{field}' does NOT match the pattern.")
-
+    # Validate fields against the regex
+    if not regex_pattern:
+        print("No regex pattern provided.")
+        return
+    for field in filtered_fields:
+        if re.match(regex_pattern, field):
+            print(f"'{field}' matches the pattern.")
+        else:
+            print(f"'{field}' does NOT match the pattern.")
 
 def post_new_database_connection(
         base_url: str = os.getenv("BASE_URL", "http://localhost:19000"),
