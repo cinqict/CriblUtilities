@@ -1,4 +1,6 @@
 import typer
+import re
+import os
 import json
 from cribl_utilities_cli import __version__
 from cribl_utilities_cli.ingest import Ingestor
@@ -24,7 +26,7 @@ def check_version():
 @app.command()
 def example_env():
     """
-    Print an example .env file
+    Print an example of an environment variables file
     """
     example_dotenv = """
     # save this file as .env in folder you are running the CLI from
@@ -45,6 +47,9 @@ def example_env():
 
     # Adds this as suffix for the database collector source id	
     DBCOLL_SUFFIX={guid}
+    
+    # Optional. Set to False to set all schedule.enabled to False
+    SCHEDULE_ENABLED=true
     """
     typer.echo(example_dotenv)
 
@@ -86,7 +91,7 @@ def check_connection():
     typer.echo(f"Connection successful! Token: {local_ingestor.token}\n")
 
 @app.command()
-def check_yaml_files(conf: str = typer.Option(..., help="cribl-config folder where the YAML files are stored")):
+def check_files(conf: str = typer.Option(..., help="cribl-config folder where the YAML files are stored")):
     """
     Checks if expected files are adhering to YAML linting. Basic syntax validation
 
@@ -104,8 +109,9 @@ def check_yaml_files(conf: str = typer.Option(..., help="cribl-config folder whe
 
 
 @app.command()
-def check_naming_regex(conf: str = typer.Option(..., help="cribl-config folder where the YAML files are stored"),
-                       field: str = typer.Option(..., help="Field to check naming convention for in the YAML files"),
+def check_naming(conf: str = typer.Option(..., help="cribl-config folder where the YAML files are stored"),
+                       field: str = typer.Option(..., help="Field to check naming convention for in the YAML files.\n"
+                                                           "Options: workergroup, sources, destinations, dataroutes, pipelines, packs."),
                        regex: str = typer.Option(None, help="Regex to check the field against"),
                        exceptions: list[str] = typer.Option(None, help="List of exceptions to the naming convention")):
     """
@@ -129,24 +135,46 @@ def check_naming_regex(conf: str = typer.Option(..., help="cribl-config folder w
 @app.command()
 def setup():
     """
-    Setup the CLI
+    Prompt the user for environment variables and save them to a file
     """
     # Dictionary to store user inputs
     user_data = {}
 
     # Questions to ask the user
     questions = [
-        ("age", "What is your age?"),
-        ("gender", "What is your gender?"),
-        ("nationality", "What is your nationality?"),
+        ("CRIBL_USERNAME", "Cribl username", None, False),
+        ("CRIBL_PASSWORD", "Cribl password", None, True),
+        ("BASE_URL", "Base URL", "http://localhost:19000", False),
+        ("CRIBL_WORKERGROUP_NAME", "Worker group name", "default", False),
+        ("DBCONN_PREFIX", "Database connection prefix (optional)", "", False),
+        ("DBCONN_SUFFIX", "Database connection suffix. Type {guid} for unique identifier", "{guid}", False),
+        ("DBCOLL_PREFIX", "Database collector prefix (optional)", "", False),
+        ("DBCOLL_SUFFIX", "Database collector suffix. Type {guid} for unique identifier", "{guid}", False),
+        ("SCHEDULE_ENABLED", "Optional. Set to False to set all schedule.enabled to False", "true", False),
     ]
 
     # Prompt the user for each question
-    for key, question in questions:
-        answer = typer.prompt(question)
+    for key, question, default, is_password in questions:
+        if is_password:
+            answer = typer.prompt(question, hide_input=True)
+        else:
+            answer = typer.prompt(question, default=default)
+        # Escape backslashes
+        answer = re.sub(r'\\', r'\\\\', answer)
+        # Escape dollar signs
+        answer = re.sub(r'\$', r'\\$', answer)
+
         user_data[key] = answer
 
-    typer.echo(user_data)
+    # Convert the dictionary to a format suitable for the export function
+    export_lines = [f'export {key}="{value}"' for key, value in user_data.items()]
+
+    # Write the formatted string to a file called 'variables'
+    with open("variables", "w") as file:
+        file.write("\n".join(export_lines))
+
+    typer.echo("Environment variables saved to 'variables' file.")
+    typer.echo("Please run `source variables` to apply the environment variables.")
 
 @app.command()
 def print_inputs_config(folder_name: str, file_names: list[str] | None = None):
@@ -168,7 +196,11 @@ def print_inputs_config(folder_name: str, file_names: list[str] | None = None):
     inputs = local_ingestor.load_input(file_names=file_names)
     inputs_ids = [single_input.id for single_input in inputs]
     typer.echo("--- Inputs ---")
-    typer.echo("Inputs loaded successfully.\nIDs:")
+    typer.echo("Inputs loaded successfully.\nDetails:")
+    for single_input in inputs:
+        typer.echo(json.dumps(single_input.model_dump(), indent=4))
+    typer.echo("\n")
+    typer.echo("Inputs IDs:\n")
     for input_id in inputs_ids:
         typer.echo(f"- {input_id}")
     typer.echo("\n")
@@ -231,8 +263,12 @@ def print_connections_config(folder_name: str, file_names: list[str] | None = No
     local_ingestor.check_environment_variables()
     connections = local_ingestor.load_connections(file_names=file_names)
     connections_ids = [single_connection.id for single_connection in connections]
-    typer.echo("\n--- Connections ---")
-    typer.echo("Connections loaded successfully.\nIDs:")
+    typer.echo("\n--- Connections ---\n")
+    typer.echo("Connections loaded successfully.\nDetails:")
+    for connection in connections:
+        typer.echo(json.dumps(connection.model_dump(), indent=4))
+    typer.echo("\n")
+    typer.echo("Connections IDs\n:")
     for connection_id in connections_ids:
         typer.echo(f"- {connection_id}")
     typer.echo("\n")

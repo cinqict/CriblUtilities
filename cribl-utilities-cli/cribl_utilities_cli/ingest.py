@@ -77,7 +77,6 @@ def load_examples(files: List[str]) -> tuple[dict, dict]:
         file_name = os.path.basename(file_path)
         folder_path = os.path.dirname(file_path)
         folder_name = os.path.basename(folder_path)
-
         if not os.path.exists(folder_path):
             raise NotADirectoryError(
                 f"Folder not found: {folder_name}. Make sure the folder '{folder_name}' exists."
@@ -199,15 +198,20 @@ class Ingestor:
             """
             Transform values in "disabled" entry according to provided table in Mapping API Cribl
             """
+            schedule_enable = os.getenv("SCHEDULE_ENABLED", "true").lower() in ["true", "1", "yes"]
             for trans_key, trans_sub_dict in data.items():
                 if "disabled" in trans_sub_dict:
-                    value = trans_sub_dict["disabled"]
-                    if isinstance(value, str):
-                        value = value.lower()
-                    if value in ["true", 1, True, "1"]:
+                    if not schedule_enable:
                         trans_sub_dict["disabled"] = False
-                    elif value in ["false", 0, False, "0"]:
-                        trans_sub_dict["disabled"] = True
+                    else:
+                        value = trans_sub_dict["disabled"]
+                        if isinstance(value, str):
+                            value = value.lower()
+                        if value in ["true", 1, True, "1"]:
+                            trans_sub_dict["disabled"] = False
+                        elif value in ["false", 0, False, "0"]:
+                            trans_sub_dict["disabled"] = True
+
             return data
 
         def seconds_to_cron(seconds: int) -> str:

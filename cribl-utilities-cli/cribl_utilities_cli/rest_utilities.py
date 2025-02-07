@@ -33,14 +33,14 @@ import json
 import yaml
 import re
 import os
-from dotenv import load_dotenv, find_dotenv
+#from dotenv import load_dotenv, find_dotenv
 import logging
 import traceback
 from yamllint import linter
 from yamllint.config import YamlLintConfig
 import glob
 
-_ = load_dotenv(find_dotenv())
+#_ = load_dotenv(find_dotenv())
 
 
 def environment_variables() -> None:
@@ -61,7 +61,7 @@ def environment_variables() -> None:
             raise ValueError(f"Mandatory environment variable {var} is not set correctly.")
 
 
-def cribl_health(base_url: str = os.environ["BASE_URL"]) -> str:
+def cribl_health(base_url: str = os.getenv("BASE_URL", "http://localhost:19000")) -> str:
     """Checks if Cribl is accessible."""
     try:
         response = requests.get(base_url)
@@ -114,6 +114,10 @@ def get_cribl_authentication_token(base_url: str = os.getenv("BASE_URL", "http:/
     try:
         token = response.json().get("token")
         if not token:
+            print("CRIBL_USERNAME:", os.getenv("CRIBL_USERNAME"))
+            print("CRIBL_PASSWORD:", os.getenv("CRIBL_PASSWORD"))
+            print("BASE_URL:", os.getenv("BASE_URL"))
+            print("CRIBL_WORKERGROUP_NAME:", os.getenv("CRIBL_WORKERGROUP_NAME"))
             raise KeyError("Token not found in the response.")
     except json.JSONDecodeError:
         raise ValueError("Invalid JSON response from Cribl.")
@@ -184,26 +188,26 @@ def regex_convention(cribl_config_folder: str, field: str, regex_pattern: str = 
     elif field == 'sources':
         full_paths = os.path.join(cribl_config_folder, 'groups', '*', 'local', 'cribl', 'inputs.yml')
         matching_paths = glob.glob(full_paths)
-        print("full paths ", matching_paths)
+        #print("full paths ", matching_paths)
     elif field == 'destinations':
         full_paths = os.path.join(cribl_config_folder, 'groups', '*', 'local', 'cribl', 'outputs.yml')
         matching_paths = glob.glob(full_paths)
-        print("full paths ", matching_paths)
+        #print("full paths ", matching_paths)
     elif field == 'dataroutes':
         full_paths = os.path.join(cribl_config_folder, 'groups', '*', 'local', 'cribl', 'pipelines', 'route.yml')
         # Every name of routes
         matching_paths = glob.glob(full_paths)
-        print("full paths ", matching_paths)
+        #print("full paths ", matching_paths)
     elif field == 'pipelines':
         full_paths = os.path.join(cribl_config_folder, 'groups', '*', 'local', 'cribl', 'pipelines', '*')
         # name of the folder
         matching_paths = [yaml_full_path for yaml_full_path in glob.glob(full_paths) if os.path.isdir(yaml_full_path)]
-        print("full paths ", matching_paths)
+        #print("full paths ", matching_paths)
     elif field == 'packs':
         full_paths = os.path.join(cribl_config_folder, 'groups', '*', 'default', '*')
         # name of the folder
         matching_paths = [yaml_full_path for yaml_full_path in glob.glob(full_paths) if os.path.isdir(yaml_full_path)]
-        print("full paths ", matching_paths)
+        #print("full paths ", matching_paths)
     else:
         raise ValueError("Field not supported")
 
@@ -220,7 +224,7 @@ def regex_convention(cribl_config_folder: str, field: str, regex_pattern: str = 
             return
     data = []
     for yaml_full_path in matching_paths:
-        print('File/folder: ', yaml_full_path)
+        #print('File/folder: ', yaml_full_path)
         # Read the YAML file or the foldernames
         if field == 'workergroup':
             data.append(list(open_yaml(yaml_full_path).keys()))
@@ -241,20 +245,27 @@ def regex_convention(cribl_config_folder: str, field: str, regex_pattern: str = 
     data = [item for sublist in data for item in (sublist if isinstance(sublist, list) else [sublist])]
     # Filter out the fields to be excluded
     excluded_fields = exceptions[0].replace(' ','').split(',') if exceptions else []
-    print('excluded_fields', excluded_fields)
-    print('data', data)
+    #print('excluded_fields', excluded_fields)
+    #print('data', data)
     filtered_fields = [field for field in data if field not in excluded_fields]
-    print('filtered_fields', filtered_fields)
+    #print('filtered_fields', filtered_fields)
 
     # Validate fields against the regex
     if not regex_pattern:
-        print("No regex pattern provided.")
+        print("No regex pattern provided. Please provide a regex pattern.")
         return
+    flag = 0
     for field in filtered_fields:
         if re.match(regex_pattern, field):
-            print(f"'{field}' matches the pattern.")
+            #print(f"'{field}' matches the pattern.")
+            pass
         else:
-            print(f"'{field}' does NOT match the pattern.")
+            print(f"\n'{field}' does NOT match the regex pattern.\n")
+            flag = 1
+    if flag == 0:
+        print(f"\nOK")
+
+
 
 def post_new_database_connection(
         base_url: str = os.getenv("BASE_URL", "http://localhost:19000"),
