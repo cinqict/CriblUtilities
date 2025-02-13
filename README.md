@@ -8,6 +8,9 @@ To do this we will make:
 2. using the python package we will make a simple cli
 3. we will make a Docker image using the cli so people can easily use it without installing a bunch of stuff first
 
+## Cribl configuration 
+A local Cribl user needs to be created. This user should minimaly have the role: stream_editor.
+
 ## To run
 - Make sure to have installed a python version >=3.13
 - `docker compose up -d`
