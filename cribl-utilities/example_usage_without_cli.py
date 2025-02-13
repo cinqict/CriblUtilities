@@ -35,7 +35,7 @@
 # you can do it like this.
 # -----------------------------------------------------------------------------------------------------------
 
-from cribl_utilities_cli.ingest import Ingestor
+from cribl_utilities.ingest import Ingestor
 import sys
 
 if sys.version_info < (3, 13):

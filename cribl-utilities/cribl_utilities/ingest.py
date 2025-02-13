@@ -37,14 +37,16 @@ from typing import List
 import tomli
 from pydantic import BaseModel
 
-from cribl_utilities_cli.rest_utilities import (
+from cribl_utilities.rest_utilities import (
     environment_variables,
     cribl_health,
     get_cribl_authentication_token,
+    yaml_lint,
+    regex_convention,
     post_new_database_connection,
     post_new_input,
 )
-from cribl_utilities_cli.schemas import (
+from cribl_utilities.schemas import (
     InputSchema,
     Metadata,
     Schedule,
@@ -75,7 +77,6 @@ def load_examples(files: List[str]) -> tuple[dict, dict]:
         file_name = os.path.basename(file_path)
         folder_path = os.path.dirname(file_path)
         folder_name = os.path.basename(folder_path)
-
         if not os.path.exists(folder_path):
             raise NotADirectoryError(
                 f"Folder not found: {folder_name}. Make sure the folder '{folder_name}' exists."
@@ -131,6 +132,7 @@ class Ingestor:
         examples_folder: str = "examples",
     ):
         self.examples_folder = examples_folder
+        self.cribl_config_folder = None
         self.identities = None
         self.token = None
         self.connection = None
@@ -148,6 +150,12 @@ class Ingestor:
     def get_cribl_authtoken(self, base_url: str = os.getenv("BASE_URL", "http://localhost:19000")) -> None:
         self.token = get_cribl_authentication_token(base_url=base_url)
 
+    def check_yaml_lint(self) -> dict:
+        return yaml_lint(self.cribl_config_folder)
+
+    def check_naming_regex(self, field: str, regex_pattern: str = None, exceptions: list[str] = None, debug: bool = False) -> None:
+        return regex_convention(cribl_config_folder=self.cribl_config_folder, field=field,
+                                regex_pattern=regex_pattern, exceptions=exceptions, debug=debug)
     def merge_examples_input(self, file_names: list | None = None) -> dict:
         """
 
@@ -190,15 +198,20 @@ class Ingestor:
             """
             Transform values in "disabled" entry according to provided table in Mapping API Cribl
             """
+            schedule_enable = os.getenv("SCHEDULE_ENABLED", "true").lower() in ["true", "1", "yes"]
             for trans_key, trans_sub_dict in data.items():
                 if "disabled" in trans_sub_dict:
-                    value = trans_sub_dict["disabled"]
-                    if isinstance(value, str):
-                        value = value.lower()
-                    if value in ["true", 1, True, "1"]:
+                    if not schedule_enable:
                         trans_sub_dict["disabled"] = False
-                    elif value in ["false", 0, False, "0"]:
-                        trans_sub_dict["disabled"] = True
+                    else:
+                        value = trans_sub_dict["disabled"]
+                        if isinstance(value, str):
+                            value = value.lower()
+                        if value in ["true", 1, True, "1"]:
+                            trans_sub_dict["disabled"] = False
+                        elif value in ["false", 0, False, "0"]:
+                            trans_sub_dict["disabled"] = True
+
             return data
 
         def seconds_to_cron(seconds: int) -> str:
@@ -525,7 +538,6 @@ class Ingestor:
                 connection_data["configObj"] = row.get("configObj")
             if "customizedJdbcUrl" in row:
                 connection_data["connectionString"] = row.get("customizedJdbcUrl")
-            #print("CONNECTION DATA :", connection_data)
             connections_obj.append(ConnectionSchema(**connection_data))
 
         self.connection = connections_obj
