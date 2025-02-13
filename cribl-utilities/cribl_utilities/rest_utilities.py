@@ -166,7 +166,7 @@ def yaml_lint(cribl_config_folder: str) -> dict:
 
 
 def regex_convention(cribl_config_folder: str, field: str, regex_pattern: str = None,
-                     exceptions: list[str] = None) -> None:
+                     exceptions: list[str] = None, debug: bool = False) -> None:
     """Checks if the fields in the YAML files in the Cribl config folder match the regex pattern.
 
     Parameters
@@ -179,6 +179,8 @@ def regex_convention(cribl_config_folder: str, field: str, regex_pattern: str = 
         The regex pattern to match against the fields.
     exceptions : list[str]
         The fields to exclude from the check.
+    debug : bool
+        Flag to enable debug output.
 
     """
     if field == 'workergroup':
@@ -188,16 +190,16 @@ def regex_convention(cribl_config_folder: str, field: str, regex_pattern: str = 
     elif field == 'sources':
         full_paths = os.path.join(cribl_config_folder, 'groups', '*', 'local', 'cribl', 'inputs.yml')
         matching_paths = glob.glob(full_paths)
-        #print("full paths ", matching_paths)
+        if debug: print("full paths ", matching_paths)
     elif field == 'destinations':
         full_paths = os.path.join(cribl_config_folder, 'groups', '*', 'local', 'cribl', 'outputs.yml')
         matching_paths = glob.glob(full_paths)
-        #print("full paths ", matching_paths)
+        if debug: print("full paths ", matching_paths)
     elif field == 'dataroutes':
         full_paths = os.path.join(cribl_config_folder, 'groups', '*', 'local', 'cribl', 'pipelines', 'route.yml')
         # Every name of routes
         matching_paths = glob.glob(full_paths)
-        #print("full paths ", matching_paths)
+        if debug: print("full paths ", matching_paths)
     elif field == 'pipelines':
         full_paths = os.path.join(cribl_config_folder, 'groups', '*', 'local', 'cribl', 'pipelines', '*')
         # name of the folder
@@ -207,7 +209,7 @@ def regex_convention(cribl_config_folder: str, field: str, regex_pattern: str = 
         full_paths = os.path.join(cribl_config_folder, 'groups', '*', 'default', '*')
         # name of the folder
         matching_paths = [yaml_full_path for yaml_full_path in glob.glob(full_paths) if os.path.isdir(yaml_full_path)]
-        #print("full paths ", matching_paths)
+        if debug: print("full paths ", matching_paths)
     else:
         raise ValueError("Field not supported")
 
@@ -224,7 +226,7 @@ def regex_convention(cribl_config_folder: str, field: str, regex_pattern: str = 
             return
     data = []
     for yaml_full_path in matching_paths:
-        #print('File/folder: ', yaml_full_path)
+        if debug: print('File/folder: ', yaml_full_path)
         # Read the YAML file or the foldernames
         if field == 'workergroup':
             data.append(list(open_yaml(yaml_full_path).keys()))
@@ -245,10 +247,10 @@ def regex_convention(cribl_config_folder: str, field: str, regex_pattern: str = 
     data = [item for sublist in data for item in (sublist if isinstance(sublist, list) else [sublist])]
     # Filter out the fields to be excluded
     excluded_fields = exceptions[0].replace(' ','').split(',') if exceptions else []
-    #print('excluded_fields', excluded_fields)
-    #print('data', data)
+    if debug: print('excluded_fields', excluded_fields)
+    if debug: print('data', data)
     filtered_fields = [field for field in data if field not in excluded_fields]
-    #print('filtered_fields', filtered_fields)
+    if debug: print('filtered_fields', filtered_fields)
 
     # Validate fields against the regex
     if not regex_pattern:

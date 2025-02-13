@@ -4,7 +4,7 @@ import pytest
 import json
 from unittest.mock import patch, Mock
 import requests
-from cribl_utilities_cli.ingest import Ingestor
+from cribl_utilities.ingest import Ingestor
 
 
 @pytest.fixture

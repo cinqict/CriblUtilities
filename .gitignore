@@ -165,3 +165,8 @@ scratch*
 test.py
 drafts.ipynb
 .pypirc
+cribl-utilities/.DS_Store
+cribl-utilities/variables
+variables
+.DS_Store
+cribl-utilities/trace.txt

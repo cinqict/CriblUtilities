@@ -37,7 +37,7 @@ from typing import List
 import tomli
 from pydantic import BaseModel
 
-from cribl_utilities_cli.rest_utilities import (
+from cribl_utilities.rest_utilities import (
     environment_variables,
     cribl_health,
     get_cribl_authentication_token,
@@ -46,7 +46,7 @@ from cribl_utilities_cli.rest_utilities import (
     post_new_database_connection,
     post_new_input,
 )
-from cribl_utilities_cli.schemas import (
+from cribl_utilities.schemas import (
     InputSchema,
     Metadata,
     Schedule,
@@ -153,9 +153,9 @@ class Ingestor:
     def check_yaml_lint(self) -> dict:
         return yaml_lint(self.cribl_config_folder)
 
-    def check_naming_regex(self, field: str, regex_pattern: str = None, exceptions: list[str] = None) -> None:
+    def check_naming_regex(self, field: str, regex_pattern: str = None, exceptions: list[str] = None, debug: bool = False) -> None:
         return regex_convention(cribl_config_folder=self.cribl_config_folder, field=field,
-                                regex_pattern=regex_pattern, exceptions=exceptions)
+                                regex_pattern=regex_pattern, exceptions=exceptions, debug=debug)
     def merge_examples_input(self, file_names: list | None = None) -> dict:
         """
 
