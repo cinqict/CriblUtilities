@@ -1,8 +1,10 @@
 # Using the cribl-utilities-cli
 ## Install instructions
 - `brew install pipx`
-- `pipx install cribl-utilities-cli`
-- `cribl-utilities-cli --help`
+- `pipx install cribl-utilities`
+- `cribl-utilities --help`
 
 ## Notes on usage
-- before running the CLI make sure that your credentials are included in the same folder that you are running the CLI in. The credentials must be in a `.env` file. For an example of what this must look like run `cribl-utilities-cli example-env`
+- Before running the CLI make sure that your variables file with the Cribl credentials are included in the same folder that you are running the CLI in. 
+  - Use an existing variables file and use it running `source [FILE]`. To view an example or a variables file type cribl-utilities example-env
+  - To create a new variables file use cribl-utilities setup. Use it running `source variables`
