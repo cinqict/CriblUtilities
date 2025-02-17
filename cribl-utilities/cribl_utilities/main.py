@@ -124,7 +124,7 @@ def example_env():
     Print an example of an environment variables file
     """
     example_dotenv = """
-    # save this file as .env in folder you are running the CLI from
+    # save this file in the folder you are running the CLI from, and use typing `source [FILE]` to apply the environment variables
 
     CRIBL_USERNAME=your_cribl_username
     CRIBL_PASSWORD=your_cribl_password
@@ -195,7 +195,7 @@ def setup():
 @app.command()
 def print_inputs_config(folder_name: str, file_names: list[str] | None = None):
     """
-    Load the inputs from the chosen folder
+    Load the inputs from the chosen folder and print them
 
     folder_name : str - The name of the folder where the inputs are stored
 
@@ -265,7 +265,7 @@ def post_inputs(folder_name: str, file_names: list[str] | None = None):
 @app.command()
 def print_connections_config(folder_name: str, file_names: list[str] | None = None):
     """
-    Load the connections from the examples folder
+    Load the connections from the examples folder and print them
 
     folder_name : str - The name of the folder where the inputs are stored
 
