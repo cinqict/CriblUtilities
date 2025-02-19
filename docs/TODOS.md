@@ -29,4 +29,4 @@ MkDocs is free and easy to use. It is a static site generator that's geared towa
 - [✓] Merge to main
 - [✓] Debug param to check-naming
 - [✓] Change name cribl-utilities-cli to cribl-utilities
-- [ ] Make package and publish to PyPi
+- [✓] Make package and publish to PyPi

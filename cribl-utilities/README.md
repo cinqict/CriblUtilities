@@ -1,4 +1,4 @@
-# Using the cribl-utilities-cli
+# Using cribl-utilities CLI
 ## Install instructions
 - `brew install pipx`
 - `pipx install cribl-utilities`

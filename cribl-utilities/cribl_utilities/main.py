@@ -98,17 +98,7 @@ app.add_typer(
     check_app,
     name="check",
     help=(
-        "Perform various checks related to Cribl utilities.                                                                                       \n"
-        ""
-        "Subcommands:                                                                                                                                      \n"
-        "  version        Check the version of the cribl-utilities CLI                                                                                     \n"
-        "  env            Check the environment variables                                                                                        \n"
-        "  cribl-health   Check the health of the Cribl instance                                                                                 \n"
-        "  connection     Check the connection to the Cribl instance                                                                                       \n"
-        "  files          Checks if expected files are adhering to YAML linting. Basic syntax validation                                                   \n"
-        "  naming         Check the naming convention of the field in the YAML files                                                                     \n"
-        ""
-        "Type 'cribl-utilities check SUBCOMMAND --help' to see the options.                                                                                "
+        "Perform various checks related to Cribl utilities. Type `cribl-utilities check --help` to see subcommands"
     )
 )
 
