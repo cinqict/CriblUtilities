@@ -9,7 +9,12 @@ A Python CLI package for migrating Splunk configurations to Cribl and validating
 - Check if Cribl .yml files in cribl-config adhere to a given regex naming convention
 
 ## Cribl configuration 
-A local Cribl user needs to be created. This user should minimaly have the role: stream_editor.
+A local Cribl user needs to be created. This user should minimally have the role: stream_editor.
+
+## Python package usage
+- `docker compose up -d`
+- `pip install cribl-utilities`
+- `cribl-utilities --help`
 
 ## Run example usage without installing the package
 - Make sure to have installed a python version >=3.13
@@ -19,11 +24,6 @@ A local Cribl user needs to be created. This user should minimaly have the role:
 - Example code without cli:
   - `cd cribl-utilities-cli`
   - `python example_usage_without_cli.py`
-
-## Python package usage
-- `docker compose up -d`
-- `pip install cribl-utilities`
-- `cribl-utilities --help`
 
 ## To serve the docs
 - `mkdocs serve`
