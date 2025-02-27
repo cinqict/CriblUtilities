@@ -170,5 +170,4 @@ cribl-utilities/variables
 variables
 .DS_Store
 cribl-utilities/trace.txt
-cribl-utilities/Dockerfile
 cribl-utilities/cribl-utilities.tar
