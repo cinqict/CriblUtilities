@@ -1,5 +1,5 @@
 # CriblUtilities
-A Python CLI package for migrating Splunk configurations to Cribl and validating the naming conventions of files in the Cribl configuration folder.
+CriblUtilities is a Python CLI package that streamlines migration to Cribl Stream and validates configurations. With minimal setup, it transfers configurations from existing tools to Cribl Stream. It also integrates with GitOps workflows to verify naming conventions and file formats before implementing changes.
 
 ## Other packages
 [PyPI](https://pypi.org/project/cribl-utilities/)
