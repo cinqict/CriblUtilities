@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>cli-docs - Splunk to Cribl</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "cli-docs";
+        var mkdocs_page_input_path = "cli-docs.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> Splunk to Cribl
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../Mapping%20API%20Cribl/">Mapping</a>
+                </li>
+              </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="#">cli-docs</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#cribl-utilities-example-env">cribl-utilities example-env</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#cribl-utilities-setup">cribl-utilities setup</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#cribl-utilities-print-inputs-config">cribl-utilities print-inputs-config</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#cribl-utilities-post-inputs">cribl-utilities post-inputs</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#cribl-utilities-print-connections-config">cribl-utilities print-connections-config</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#cribl-utilities-post-connections">cribl-utilities post-connections</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#cribl-utilities-migrate-database">cribl-utilities migrate-database</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#cribl-utilities-check">cribl-utilities check</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#cribl-utilities-check-version">cribl-utilities check version</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#cribl-utilities-check-env">cribl-utilities check env</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#cribl-utilities-check-cribl-health">cribl-utilities check cribl-health</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#cribl-utilities-check-connection">cribl-utilities check connection</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#cribl-utilities-check-files">cribl-utilities check files</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#cribl-utilities-check-naming">cribl-utilities check naming</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#parameters">Parameters</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#returns">Returns</a>
+    </li>
+    </ul>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">Splunk to Cribl</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">cli-docs</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="cribl-utilities"><code>cribl-utilities</code></h1>
+<p>This is the main command line interface for the cribl-utilities CLI</p>
+<p><strong>Usage</strong>:</p>
+<pre><code class="language-console">$ cribl-utilities [OPTIONS] COMMAND [ARGS]...
+</code></pre>
+<p><strong>Options</strong>:</p>
+<ul>
+<li><code>--install-completion</code>: Install completion for the current shell.</li>
+<li><code>--show-completion</code>: Show completion for the current shell, to copy it or customize the installation.</li>
+<li><code>--help</code>: Show this message and exit.</li>
+</ul>
+<p><strong>Commands</strong>:</p>
+<ul>
+<li><code>example-env</code>: Print an example of an environment...</li>
+<li><code>setup</code>: Prompt the user for environment variables...</li>
+<li><code>print-inputs-config</code>: Load the inputs from the chosen folder and...</li>
+<li><code>post-inputs</code>: Post the inputs to the Cribl instance</li>
+<li><code>print-connections-config</code>: Load the connections from the examples...</li>
+<li><code>post-connections</code>: Post the connections to the Cribl instance</li>
+<li><code>migrate-database</code>: Check the environment variables, Cribl...</li>
+<li><code>check</code>: Perform various checks related to Cribl...</li>
+</ul>
+<h2 id="cribl-utilities-example-env"><code>cribl-utilities example-env</code></h2>
+<p>Print an example of an environment variables file</p>
+<p><strong>Usage</strong>:</p>
+<pre><code class="language-console">$ cribl-utilities example-env [OPTIONS]
+</code></pre>
+<p><strong>Options</strong>:</p>
+<ul>
+<li><code>--help</code>: Show this message and exit.</li>
+</ul>
+<h2 id="cribl-utilities-setup"><code>cribl-utilities setup</code></h2>
+<p>Prompt the user for environment variables and save them to a file</p>
+<p><strong>Usage</strong>:</p>
+<pre><code class="language-console">$ cribl-utilities setup [OPTIONS]
+</code></pre>
+<p><strong>Options</strong>:</p>
+<ul>
+<li><code>--help</code>: Show this message and exit.</li>
+</ul>
+<h2 id="cribl-utilities-print-inputs-config"><code>cribl-utilities print-inputs-config</code></h2>
+<p>Load the inputs from the chosen folder and print them</p>
+<p>folder_name : str - The name of the folder where the inputs are stored</p>
+<p>file_names : list | None - The names of the files to load (be aware that order matters
+first file should be the inputs.conf file, second file should be the connections.conf file)
+If None, defaults to [&#x27;db_inputs.conf&#x27;, &#x27;db_connections.conf&#x27;]</p>
+<p><strong>Usage</strong>:</p>
+<pre><code class="language-console">$ cribl-utilities print-inputs-config [OPTIONS] FOLDER_NAME
+</code></pre>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li><code>FOLDER_NAME</code>: [required]</li>
+</ul>
+<p><strong>Options</strong>:</p>
+<ul>
+<li><code>--file-names TEXT</code></li>
+<li><code>--help</code>: Show this message and exit.</li>
+</ul>
+<h2 id="cribl-utilities-post-inputs"><code>cribl-utilities post-inputs</code></h2>
+<p>Post the inputs to the Cribl instance</p>
+<p>folder_name : str - The name of the folder where the inputs are stored</p>
+<p>file_names : list | None - The names of the files to load (be aware that order matters
+first file should be the db_inputs.conf file, second file should be the db_connections.conf file)
+If None, defaults to [&#x27;db_inputs.conf&#x27;, &#x27;db_connections.conf&#x27;]</p>
+<p><strong>Usage</strong>:</p>
+<pre><code class="language-console">$ cribl-utilities post-inputs [OPTIONS] FOLDER_NAME
+</code></pre>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li><code>FOLDER_NAME</code>: [required]</li>
+</ul>
+<p><strong>Options</strong>:</p>
+<ul>
+<li><code>--file-names TEXT</code></li>
+<li><code>--help</code>: Show this message and exit.</li>
+</ul>
+<h2 id="cribl-utilities-print-connections-config"><code>cribl-utilities print-connections-config</code></h2>
+<p>Load the connections from the examples folder and print them</p>
+<p>folder_name : str - The name of the folder where the inputs are stored</p>
+<p>file_names : list | None - The names of the files to load (be aware that order matters
+first file should be the inputs.conf file, second file should be the connections.conf file)
+If None, defaults to [&#x27;db_inputs.conf&#x27;, &#x27;db_connections.conf&#x27;]</p>
+<p><strong>Usage</strong>:</p>
+<pre><code class="language-console">$ cribl-utilities print-connections-config [OPTIONS] FOLDER_NAME
+</code></pre>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li><code>FOLDER_NAME</code>: [required]</li>
+</ul>
+<p><strong>Options</strong>:</p>
+<ul>
+<li><code>--file-names TEXT</code></li>
+<li><code>--help</code>: Show this message and exit.</li>
+</ul>
+<h2 id="cribl-utilities-post-connections"><code>cribl-utilities post-connections</code></h2>
+<p>Post the connections to the Cribl instance</p>
+<p>folder_name : str - The name of the folder where the inputs are stored</p>
+<p>file_names : list | None - The names of the files to load (be aware that order matters
+first file should be the inputs.conf file, second file should be the connections.conf file)
+If None, defaults to [&#x27;db_inputs.conf&#x27;, &#x27;db_connections.conf&#x27;]</p>
+<p><strong>Usage</strong>:</p>
+<pre><code class="language-console">$ cribl-utilities post-connections [OPTIONS] FOLDER_NAME
+</code></pre>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li><code>FOLDER_NAME</code>: [required]</li>
+</ul>
+<p><strong>Options</strong>:</p>
+<ul>
+<li><code>--file-names TEXT</code></li>
+<li><code>--help</code>: Show this message and exit.</li>
+</ul>
+<h2 id="cribl-utilities-migrate-database"><code>cribl-utilities migrate-database</code></h2>
+<p>Check the environment variables, Cribl health, get the Cribl auth token, load and post inputs and connections,
+and save the trace to a file</p>
+<p>folder_name : str - The name of the folder where the inputs are stored</p>
+<p>file_names : list | None - The names of the files to load (be aware that order matters
+first file should be the inputs.conf file, second file should be the connections.conf file)
+If None, defaults to [&#x27;db_inputs.conf&#x27;, &#x27;db_connections.conf&#x27;]</p>
+<p>save_trace_to_file : bool - If True, saves the trace to a file</p>
+<p><strong>Usage</strong>:</p>
+<pre><code class="language-console">$ cribl-utilities migrate-database [OPTIONS] FOLDER_NAME
+</code></pre>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li><code>FOLDER_NAME</code>: [required]</li>
+</ul>
+<p><strong>Options</strong>:</p>
+<ul>
+<li><code>--file-names TEXT</code></li>
+<li><code>--save-trace-to-file / --no-save-trace-to-file</code>: [default: no-save-trace-to-file]</li>
+<li><code>--help</code>: Show this message and exit.</li>
+</ul>
+<h2 id="cribl-utilities-check"><code>cribl-utilities check</code></h2>
+<p>Perform various checks related to Cribl utilities. Type <code>cribl-utilities check --help</code> to see subcommands</p>
+<p><strong>Usage</strong>:</p>
+<pre><code class="language-console">$ cribl-utilities check [OPTIONS] COMMAND [ARGS]...
+</code></pre>
+<p><strong>Options</strong>:</p>
+<ul>
+<li><code>--help</code>: Show this message and exit.</li>
+</ul>
+<p><strong>Commands</strong>:</p>
+<ul>
+<li><code>version</code>: Check the version of the cribl-utilities CLI</li>
+<li><code>env</code>: Check the environment variables</li>
+<li><code>cribl-health</code>: Check the health of the Cribl instance</li>
+<li><code>connection</code>: Check the connection to the Cribl instance</li>
+<li><code>files</code>: Checks if expected files are adhering to...</li>
+<li><code>naming</code>: Check the naming convention of the field...</li>
+</ul>
+<h3 id="cribl-utilities-check-version"><code>cribl-utilities check version</code></h3>
+<p>Check the version of the cribl-utilities CLI</p>
+<p><strong>Usage</strong>:</p>
+<pre><code class="language-console">$ cribl-utilities check version [OPTIONS]
+</code></pre>
+<p><strong>Options</strong>:</p>
+<ul>
+<li><code>--help</code>: Show this message and exit.</li>
+</ul>
+<h3 id="cribl-utilities-check-env"><code>cribl-utilities check env</code></h3>
+<p>Check the environment variables</p>
+<p><strong>Usage</strong>:</p>
+<pre><code class="language-console">$ cribl-utilities check env [OPTIONS]
+</code></pre>
+<p><strong>Options</strong>:</p>
+<ul>
+<li><code>--help</code>: Show this message and exit.</li>
+</ul>
+<h3 id="cribl-utilities-check-cribl-health"><code>cribl-utilities check cribl-health</code></h3>
+<p>Check the health of the Cribl instance</p>
+<p><strong>Usage</strong>:</p>
+<pre><code class="language-console">$ cribl-utilities check cribl-health [OPTIONS]
+</code></pre>
+<p><strong>Options</strong>:</p>
+<ul>
+<li><code>--help</code>: Show this message and exit.</li>
+</ul>
+<h3 id="cribl-utilities-check-connection"><code>cribl-utilities check connection</code></h3>
+<p>Check the connection to the Cribl instance</p>
+<p><strong>Usage</strong>:</p>
+<pre><code class="language-console">$ cribl-utilities check connection [OPTIONS]
+</code></pre>
+<p><strong>Options</strong>:</p>
+<ul>
+<li><code>--help</code>: Show this message and exit.</li>
+</ul>
+<h3 id="cribl-utilities-check-files"><code>cribl-utilities check files</code></h3>
+<p>Checks if expected files are adhering to YAML linting. Basic syntax validation</p>
+<p>conf : str - The cribl-config folder where the YAML files are stored</p>
+<p><strong>Usage</strong>:</p>
+<pre><code class="language-console">$ cribl-utilities check files [OPTIONS]
+</code></pre>
+<p><strong>Options</strong>:</p>
+<ul>
+<li><code>--conf TEXT</code>: cribl-config folder where the YAML files are stored  [required]</li>
+<li><code>--help</code>: Show this message and exit.</li>
+</ul>
+<h3 id="cribl-utilities-check-naming"><code>cribl-utilities check naming</code></h3>
+<p>Check the naming convention of the field in the YAML files</p>
+<h2 id="parameters">Parameters</h2>
+<p>conf : str - The cribl-config folder where the YAML files are stored
+field : str - Field to check naming convention for in the YAML files
+regex : str - Regex to check the field against
+exceptions : list - The fields to exclude from the check
+debug : bool - Flag to enable debug option</p>
+<h2 id="returns">Returns</h2>
+<p><strong>Usage</strong>:</p>
+<pre><code class="language-console">$ cribl-utilities check naming [OPTIONS]
+</code></pre>
+<p><strong>Options</strong>:</p>
+<ul>
+<li><code>--conf TEXT</code>: cribl-config folder where the YAML files are stored  [required]</li>
+<li><code>--field TEXT</code>: Field to check naming convention for in the YAML files.
+Options: workergroup, sources, destinations, dataroutes, pipelines, packs.  [required]</li>
+<li><code>--regex TEXT</code>: Regex to check the field against</li>
+<li><code>--exceptions TEXT</code>: List of exceptions to the naming convention</li>
+<li><code>--debug / --no-debug</code>: Debug option   [default: no-debug]</li>
+<li><code>--help</code>: Show this message and exit.</li>
+</ul>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../Mapping%20API%20Cribl/" class="btn btn-neutral float-left" title="Mapping"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../Mapping%20API%20Cribl/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

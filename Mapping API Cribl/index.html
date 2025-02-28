@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Mapping - Splunk to Cribl</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Mapping";
+        var mkdocs_page_input_path = "Mapping API Cribl.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> Splunk to Cribl
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="#">Mapping</a>
+    <ul class="current">
+    </ul>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../cli-docs/">cli-docs</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">Splunk to Cribl</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Mapping</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <p><strong>API Inputs</strong></p>
+<p>This table shows the information sent with each field in the API Inputs call.<br />
+db_inputs is left joined to db_connections with the connection field from db_inputs and the key name of the db_connections entries.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">API Inputs field</th>
+<th style="text-align: left;">db_inputs.conf</th>
+<th style="text-align: left;">db_connections.conf</th>
+<th style="text-align: left;">Fill in value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">type</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">"collection"</td>
+</tr>
+<tr>
+<td style="text-align: left;">authType*</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">schedule.cronSchedule</td>
+<td style="text-align: left;">interval</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">schedule.run.mode</td>
+<td style="text-align: left;">mode</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">schedule.enabled*</td>
+<td style="text-align: left;">disabled</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">collector.conf.connectionId</td>
+<td style="text-align: left;">connection</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">collector.conf.query</td>
+<td style="text-align: left;">query</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">collector.type</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">"database"</td>
+</tr>
+<tr>
+<td style="text-align: left;">input.type</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">"collection"</td>
+</tr>
+<tr>
+<td style="text-align: left;">input.metadata[0].name</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">“host”</td>
+</tr>
+<tr>
+<td style="text-align: left;">input.metadata[0].value</td>
+<td style="text-align: left;">host</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">input.metadata[1].name</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">“index”</td>
+</tr>
+<tr>
+<td style="text-align: left;">input.metadata[1].value</td>
+<td style="text-align: left;">index</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">input.metadata[2].name</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">“source”</td>
+</tr>
+<tr>
+<td style="text-align: left;">input.metadata[2].value</td>
+<td style="text-align: left;">source</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">input.metadata[3].name</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">“sourcetype”</td>
+</tr>
+<tr>
+<td style="text-align: left;">input.metadata[3].value</td>
+<td style="text-align: left;">sourcetype</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">id</td>
+<td style="text-align: left;">[....]+unique code</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+</tbody>
+</table>
+<p>not sent values from inputs.conf:<br />
+index_time_mode<br />
+max_rows</p>
+<p><strong>API Connections</strong></p>
+<p>This table shows the information sent with each field in the API Connections call. <br />
+db_connections is left joined to identities with the identity field from db_connections and the key name of identities</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">API Connections Field</th>
+<th style="text-align: left;">db_connections.conf</th>
+<th style="text-align: left;">identities.conf</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">id</td>
+<td style="text-align: left;">[...]+unique code</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">databaseType*</td>
+<td style="text-align: left;">connection_type</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">username</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">username</td>
+</tr>
+<tr>
+<td style="text-align: left;">password</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">password</td>
+</tr>
+<tr>
+<td style="text-align: left;">connectionString*</td>
+<td style="text-align: left;">customizedJdbcUrl</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">database</td>
+<td style="text-align: left;">database</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">disabled</td>
+<td style="text-align: left;">disabled</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">host</td>
+<td style="text-align: left;">host</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">identity</td>
+<td style="text-align: left;">identity</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">jdbcUseSSL</td>
+<td style="text-align: left;">jdbcUseSSL</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">localTimezoneConversionEnabled</td>
+<td style="text-align: left;">localTimezoneConversionEnabled</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">port</td>
+<td style="text-align: left;">port</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">readonly</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">None</td>
+</tr>
+<tr>
+<td style="text-align: left;">timezone</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">None</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_1"></h2>
+<h2 id="authtype">authType</h2>
+<p>If connection_type=mssql_jdts_win_auth fill this with configObj <br />
+else fill with connectionString.</p>
+<h2 id="scheduleenabled">schedule.enabled</h2>
+<p>Because Splunk talks about disabled and Cribl about enabled the states need to be transformed to the opposite value. Cribl only allows true or false booleans where Splunk allows 0 and 1 numbers as well; these need to be transformed.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">From</th>
+<th style="text-align: left;">To</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">true</td>
+<td style="text-align: left;">false</td>
+</tr>
+<tr>
+<td style="text-align: left;">false</td>
+<td style="text-align: left;">true</td>
+</tr>
+<tr>
+<td style="text-align: left;">1</td>
+<td style="text-align: left;">false</td>
+</tr>
+<tr>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">true</td>
+</tr>
+</tbody>
+</table>
+<h2 id="databasetype">databaseType</h2>
+<p>Cribl allowed values: mysql, oracle, postgres, sqlserver </p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">From</th>
+<th style="text-align: left;">To</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">oracle_service</td>
+<td style="text-align: left;">oracle</td>
+</tr>
+<tr>
+<td style="text-align: left;">oracle</td>
+<td style="text-align: left;">oracle</td>
+</tr>
+<tr>
+<td style="text-align: left;">mssql_jtds_win_auth</td>
+<td style="text-align: left;">sqlserver</td>
+</tr>
+<tr>
+<td style="text-align: left;">generic_mssql</td>
+<td style="text-align: left;">sqlserver</td>
+</tr>
+<tr>
+<td style="text-align: left;">db2</td>
+<td style="text-align: left;">-not supported yet-</td>
+</tr>
+<tr>
+<td style="text-align: left;">postgres</td>
+<td style="text-align: left;">postgres</td>
+</tr>
+<tr>
+<td style="text-align: left;">sybase_ase</td>
+<td style="text-align: left;">-not supported yet-</td>
+</tr>
+<tr>
+<td style="text-align: left;">vertica</td>
+<td style="text-align: left;">-not supported yet-</td>
+</tr>
+</tbody>
+</table>
+<p>for -not supported yet- throw an error.</p>
+<h2 id="connectionstring">connectionString</h2>
+<p>If available this should be filled with customizedJdbcUrl contents. If not available this needs to be drafted using parameters (in curly brackets) available:<br />
+jdbc:{connection_type}://{host}:{post};encrypt={jdbcUseSSL};user={username};password={password};</p>
+<p>If connection_type=mssql_jdts_win_auth fill configObj in stead of connectionString with the following:<br />
+{<br />
+  "authentication": {<br />
+    "type": "ntlm",<br />
+    "options": {<br />
+      "userName": "{username}",<br />
+      "password": "{password}",<br />
+      "domain": "{domain}"<br />
+    }<br />
+  },<br />
+  "options": {<br />
+    "connectTimeout": 15000,<br />
+    "trustServerCertificate": true<br />
+  },<br />
+  "connectionTimeout": 15000,<br />
+  "port": {port},<br />
+  "server": "{url}",<br />
+  "database": "{databasename}"<br />
+}</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href=".." class="btn btn-neutral float-left" title="Home"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../cli-docs/" class="btn btn-neutral float-right" title="cli-docs">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href=".." style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../cli-docs/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

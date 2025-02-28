@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>TODOS - Splunk to Cribl</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "TODOS";
+        var mkdocs_page_input_path = "TODOS.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> Splunk to Cribl
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../Mapping%20API%20Cribl/">Mapping</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../cli-docs/">cli-docs</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">Splunk to Cribl</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">TODOS</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h2 id="todo-list">TODO list</h2>
+<ul>
+<li>[✓] clean up our hardrives and make sure we have enough space to work (it would be way easier to be able to use Docker Desktop)</li>
+<li>[✓] Adjust schemas, create functions, and integrate them into the ingestor class to post the mapped data to the Cribl Input API.</li>
+<li>[✓] Adjust schemas, create functions, and integrate them into the ingestor class to post the mapped data to the Cribl Connections API.</li>
+<li>[✓] research and choose a way to build the python package (<strong>setup.py</strong>, poetry, etc.) (https://packaging.python.org/tutorials/packaging-projects/)<br />
+    To build and manage a package, use poetry. Automated environment and dependencies management. Integrated publishing to PyPi.<br />
+    If we want to share a standalone executable that works in any system without having to install pyton, use PyInstaller.  </li>
+<li>[✓] make a decision on how we will do unit tests (<strong>pytest</strong>, unittest, etc.)</li>
+<li>[✓] make a decision on what documentation we will use (<strong>sphinx</strong>, mkdocs, etc.)<br />
+MkDocs is free and easy to use. It is a static site generator that's geared towards project documentation. It is simple to configure and use, and it is also easy to customize.</li>
+<li>[✓] Error handling and unit tests for the ingestor class. Consider:<br />
+        - [✓] environment variables set (right)<br />
+        - [✓] connection to Cribl<br />
+        - [✓] validation of input files: 3 files, right format<br />
+        - [✓] warning if username, password, or domain are missing.
+        - [✓] validation of input path and input file names
+        - [✓] in each field throw error in case of data type mismatch </li>
+<li>[✓] Make optional parameter to overwrite schedule.enable to false for all</li>
+<li>[✓] write documentation for the ingestor class (make sure your docstrings are good)</li>
+<li>[✓] create a cli (using Typer) that uses the ingestor class to post to the Cribl API</li>
+<li>[✓] create a Dockerfile that uses the cli to post to the Cribl API and publish it to Docker Hub</li>
+<li>[✓] CLI command 'cribl-utilities-cli migrate-database': </li>
+<li>does the same as the current run-all</li>
+<li>[✓] re structure cli  to make command checdk and subcommands in it. Inform user in --help message. Reorganize commands.</li>
+<li>[✓] CLI command 'cribl-utitilies-cli setup': add env variables manually one by one.</li>
+<li>[✓] CLI command 'cribl-utilities-cli check-files': checks if expected files are adhering to YAML linting. Basic syntax validation</li>
+<li>[✓] CLI command 'cribl-utilities-cli check-naming': see docs. Check regex naming convention.</li>
+<li>[✓] Merge to main</li>
+<li>[✓] Debug param to check-naming</li>
+<li>[✓] Change name cribl-utilities-cli to cribl-utilities</li>
+<li>[✓] Make package and publish to PyPi</li>
+</ul>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

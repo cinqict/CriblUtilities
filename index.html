@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="description" content="None" />
+      <link rel="shortcut icon" href="img/favicon.ico" />
+    <title>Splunk to Cribl</title>
+    <link rel="stylesheet" href="css/theme.css" />
+    <link rel="stylesheet" href="css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Home";
+        var mkdocs_page_input_path = "README.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="." class="icon icon-home"> Splunk to Cribl
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="./search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="#">Home</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#functionality">🫶 Functionality</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#pre-requisites-migrate-use-cases">🛠 Pre requisites migrate use cases</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#disclaimer">⚠️ Disclaimer</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#usage">📥 Usage</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#pypy">PyPY</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#development">💪 Development</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#run-example-usage-without-installing-the-package">Run example usage without installing the package</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#to-serve-the-docs">To serve the docs</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#to-run-unit-tests">To run unit tests</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#typer-cli-related">Typer (cli) related</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#unix-macos-linux">Unix (macOS, Linux)</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#windows">Windows</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#cribl-utilities-cli">cribl-utilities CLI</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#compilation-of-a-new-release">💻 Compilation of a new release</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#build-and-publish-cli">Build and publish CLI</a>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="Mapping%20API%20Cribl/">Mapping</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="cli-docs/">cli-docs</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href=".">Splunk to Cribl</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Home</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="criblutilities">🚀 CriblUtilities</h1>
+<p>CriblUtilities is a Python CLI package that streamlines migration to Cribl Stream and validates configurations. With minimal setup, it transfers configurations from existing tools to Cribl Stream. It also integrates with Cribl GitOps workflows to verify naming conventions and file formats before implementing changes.</p>
+<h2 id="functionality">🫶 Functionality</h2>
+<table>
+<thead>
+<tr>
+<th><strong>Function</strong></th>
+<th><strong>Explanation</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Setup</td>
+<td>Setup your CriblUtilities environment</td>
+</tr>
+<tr>
+<td>Migrate</td>
+<td>Migrate database</td>
+</tr>
+<tr>
+<td>Check</td>
+<td>Check file format adherence</td>
+</tr>
+<tr>
+<td>Check</td>
+<td>Check naming convention with regex</td>
+</tr>
+</tbody>
+</table>
+<p>More information on <a href="https://github.com/cinqict/CriblUtilities/blob/main/docs/cli-docs.md">CLI-Docs</a> documentation.</p>
+<h2 id="pre-requisites-migrate-use-cases">🛠 Pre requisites migrate use cases</h2>
+<ul>
+<li>Create a local Cribl user. This user should minimally have the role: stream_editor.</li>
+</ul>
+<h2 id="disclaimer">⚠️ Disclaimer</h2>
+<p>This project is an independent initiative and is not affiliated, endorsed, or sponsored by Cribl. All trademarks and logos mentioned are the property of their respective owners. Please use this software responsibly and at your own risk.</p>
+<h2 id="usage">📥 Usage</h2>
+<h3 id="pypy">PyPY</h3>
+<ul>
+<li>brew install pipx</li>
+<li>pipx install cribl-utilities</li>
+<li>cribl-utilities --help
+Link to package on <a href="https://pypi.org/project/cribl-utilities/">PyPI</a>.</li>
+</ul>
+<h2 id="development">💪 Development</h2>
+<ul>
+<li>cd cribl-utilities</li>
+<li>'pipx install -e .'</li>
+</ul>
+<h3 id="run-example-usage-without-installing-the-package">Run example usage without installing the package</h3>
+<ul>
+<li>Make sure to have installed a python version &gt;=3.13, and have docker installed.</li>
+<li><code>pip install -r requirements.txt</code></li>
+<li>Example code without cli:</li>
+<li><code>cd cribl-utilities</code></li>
+<li><code>docker compose up -d</code><ul>
+<li>login and update admin password (default is <code>admin</code> and <code>admin</code>)</li>
+</ul>
+</li>
+<li><code>python example_usage_without_cli.py</code></li>
+<li>Cleanup: <code>docker compose down</code></li>
+</ul>
+<h3 id="to-serve-the-docs">To serve the docs</h3>
+<ul>
+<li><code>mkdocs serve</code></li>
+</ul>
+<h3 id="to-run-unit-tests">To run unit tests</h3>
+<ul>
+<li><code>docker compose up -d</code></li>
+<li><code>pip install -r requirements.txt</code></li>
+<li><code>cd cribl-utilities</code></li>
+<li><code>pytest</code></li>
+<li>Cleanup: <code>docker compose down</code></li>
+</ul>
+<h3 id="typer-cli-related">Typer (cli) related</h3>
+<h5 id="unix-macos-linux">Unix (macOS, Linux)</h5>
+<ul>
+<li><code>brew install pipx</code></li>
+<li><code>sudo pipx ensurepath --global</code> (this is to allow --global options)</li>
+<li><code>pipx install poetry</code></li>
+<li><code>poetry config virtualenvs.in-project true</code> (this makes all venvs in the project)</li>
+</ul>
+<h5 id="windows">Windows</h5>
+<ul>
+<li>Open PowerShell as administrator</li>
+<li><code>pip install pipx</code></li>
+<li><code>pipx ensurepath</code> </li>
+<li>Close PowerShell and open a new one</li>
+<li><code>pipx install poetry</code></li>
+<li><code>poetry config virtualenvs.in-project true</code> (this makes all venvs in the project)</li>
+</ul>
+<h3 id="cribl-utilities-cli">cribl-utilities CLI</h3>
+<ul>
+<li><code>poetry new cribl-utilities</code></li>
+<li><code>cd cribl-utilities</code></li>
+<li><code>poetry add typer</code></li>
+<li><code>poetry shell</code></li>
+<li><code>poetry build</code></li>
+<li><code>poetry install</code></li>
+<li><code>typer cribl_utilities.main utils docs --output docs/cli-docs.md --name cribl-utilities</code></li>
+</ul>
+<h2 id="compilation-of-a-new-release">💻 Compilation of a new release</h2>
+<h3 id="build-and-publish-cli">Build and publish CLI</h3>
+<ul>
+<li>make sure to have pipx and poetry installed and to be in the folder of the CLI itself</li>
+<li><code>poetry shell</code></li>
+<li><code>poetry build</code></li>
+<li><code>poetry config http-basic.pypi &lt;username&gt; &lt;password&gt;</code> (run once)</li>
+<li><code>poetry publish --build</code></li>
+</ul>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="Mapping%20API%20Cribl/" class="btn btn-neutral float-right" title="Mapping">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+    
+      <span><a href="Mapping%20API%20Cribl/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = ".";</script>
+    <script src="js/theme_extra.js"></script>
+    <script src="js/theme.js"></script>
+      <script src="search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
+
+<!--
+MkDocs version : 1.6.1
+Build Date UTC : 2025-02-28 13:48:12.616283+00:00
+-->
