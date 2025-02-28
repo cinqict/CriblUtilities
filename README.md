@@ -39,7 +39,7 @@ Link to project on [PyPI](https://pypi.org/project/cribl-utilities/).
 ## 💪 Development
 - 'pipx install -e .'
 
-## Compilation of a new release
+## 💻 Compilation of a new release
 ### To serve the docs
 - `mkdocs serve`
 
