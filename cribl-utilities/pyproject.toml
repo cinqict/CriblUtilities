@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "cribl-utilities"
-version = "2.0.4"
-description = "A CLI tool to interact with Cribl"
+version = "2.0.5"
+description = "A comprehensive tool to streamline migrations and validate configurations."
 authors = ["CINQ ICT <info@cinqict.nl>"]
 readme = "README.md"
 
