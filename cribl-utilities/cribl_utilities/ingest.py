@@ -303,8 +303,8 @@ class Ingestor:
                 ),
                 input=InputType(metadata=create_metadata(row)),
                 id=(
-                    f"{os.getenv('DBCOLL_PREFIX', '') + '-' if os.getenv('DBCOLL_PREFIX', '') else ''}"
-                    f"{key}-"
+                    f"{os.getenv('DBCOLL_PREFIX', '') + '' if os.getenv('DBCOLL_PREFIX', '') else ''}"
+                    f"{key}"
                     f"{uuid4() if os.getenv('DBCOLL_SUFFIX', '') == '{guid}' else os.getenv('DBCOLL_SUFFIX', '')}"
                 ),
             )
@@ -515,8 +515,8 @@ class Ingestor:
         for key, row in merged_data.items():
             connection_data = {
                 "id": (
-                    f"{os.getenv('DBCONN_PREFIX', '') + '-' if os.getenv('DBCONN_PREFIX', '') else ''}"
-                    f"{key}-{uuid4() if os.getenv('DBCONN_SUFFIX', '') == '{guid}' else os.getenv('DBCONN_SUFFIX', '')}"
+                    f"{os.getenv('DBCONN_PREFIX', '') + '' if os.getenv('DBCONN_PREFIX', '') else ''}"
+                    f"{key}{uuid4() if os.getenv('DBCONN_SUFFIX', '') == '{guid}' else os.getenv('DBCONN_SUFFIX', '')}"
                 ),
                 "databaseType": row.get("connection_type"),
                 "username": row.get("username"),
