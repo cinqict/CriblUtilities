@@ -12,7 +12,7 @@ CriblUtilities is a Python CLI package that streamlines migration to Cribl Strea
 | Check        | Check file format adherence           |
 | Check        | Check naming convention with regex    |
 
-More information on [CLI-Docs]([https://pypi.org/project/cribl-utilities/](https://github.com/cinqict/CriblUtilities/blob/main/docs/cli-docs.md)) documentation.
+More information on [CLI-Docs](https://github.com/cinqict/CriblUtilities/blob/main/docs/cli-docs.md) documentation.
 
 ## Cribl configuration 
 A local Cribl user needs to be created. This user should minimally have the role: stream_editor.
