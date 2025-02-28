@@ -47,7 +47,7 @@ def connection():
     local_ingestor.check_cribl_health()
 
     local_ingestor.get_cribl_authtoken()
-    typer.echo(f"Connection successful! Token: {local_ingestor.token}\n")
+    typer.echo(f"Connection successful!\n")
 
 @check_app.command()
 def files(conf: str = typer.Option(..., help="cribl-config folder where the YAML files are stored")):
@@ -124,16 +124,16 @@ def example_env():
     # Optional. Add this prefix for the database-connection id.
     DBCONN_PREFIX=
 
-    # Add this as suffix for the database-connection id
-    DBCONN_SUFFIX={guid}
+    # Add this as suffix for the database-connection id. Use {guid} to add a unique guid.
+    DBCONN_SUFFIX=
 
     # Optional. Add this prefix for the database collector source id. 
     DBCOLL_PREFIX=
 
-    # Adds this as suffix for the database collector source id	
-    DBCOLL_SUFFIX={guid}
+    # Adds this as suffix for the database collector source id. Use {guid} to add a unique guid.
+    DBCOLL_SUFFIX=
     
-    # Optional. Set to False to set all schedule.enabled to False
+    # Enable schedule of collector (optional)
     SCHEDULE_ENABLED=true
     """
     typer.echo(example_dotenv)
@@ -153,10 +153,10 @@ def setup():
         ("BASE_URL", "Base URL", "http://localhost:19000", False),
         ("CRIBL_WORKERGROUP_NAME", "Worker group name", "default", False),
         ("DBCONN_PREFIX", "Database connection prefix (optional)", "", False),
-        ("DBCONN_SUFFIX", "Database connection suffix. Type {guid} for unique identifier", "{guid}", False),
+        ("DBCONN_SUFFIX", "Database connection suffix. Type {guid} for unique identifier", "", False),
         ("DBCOLL_PREFIX", "Database collector prefix (optional)", "", False),
-        ("DBCOLL_SUFFIX", "Database collector suffix. Type {guid} for unique identifier", "{guid}", False),
-        ("SCHEDULE_ENABLED", "Optional. Set to False to set all schedule.enabled to False", "true", False),
+        ("DBCOLL_SUFFIX", "Database collector suffix. Type {guid} for unique identifier", "", False),
+        ("SCHEDULE_ENABLED", "Enable schedule of collector (optional)", "true", False),
     ]
 
     # Prompt the user for each question
@@ -235,7 +235,7 @@ def post_inputs(folder_name: str, file_names: list[str] | None = None):
     typer.echo(f"Status: {health_response}")
 
     local_ingestor.get_cribl_authtoken()
-    typer.echo(f"Connection successful! Token: {local_ingestor.token}\n")
+    typer.echo(f"Connection successful!\n")
 
     inputs = local_ingestor.load_input(file_names=file_names)
     inputs_ids = [single_input.id for single_input in inputs]
@@ -303,7 +303,7 @@ def post_connections(folder_name: str, file_names: list[str] | None = None):
     typer.echo(f"Status: {health_response}")
 
     local_ingestor.get_cribl_authtoken()
-    typer.echo(f"Connection successful! Token: {local_ingestor.token}\n")
+    typer.echo(f"Connection successful!\n")
 
     connections = local_ingestor.load_connections(file_names=file_names)
     connections_ids = [single_connection.id for single_connection in connections]
@@ -352,7 +352,7 @@ def migrate_database(
 
     # Step 3: Get Cribl Auth Token
     local_ingestor.get_cribl_authtoken()
-    typer.echo(f"Connection successful! Token: {local_ingestor.token}\n")
+    typer.echo(f"Connection successful!\n")
 
     # Step 4: Load and post inputs
     inputs = local_ingestor.load_input(file_names=file_names)
