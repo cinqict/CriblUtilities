@@ -36,6 +36,7 @@
 # -----------------------------------------------------------------------------------------------------------
 
 from cribl_utilities.ingest import Ingestor
+import json
 import sys
 
 if sys.version_info < (3, 13):
@@ -50,8 +51,8 @@ else:
     
     inputs = local_ingestor.load_input()
     response_inputs = local_ingestor.post_db_inputs()
-    print('RESPONSE INPUTS API: ', response_inputs)
+    print('RESPONSE INPUTS API: ', json.dumps(response_inputs, indent=4))
 
     connections = local_ingestor.load_connections()
     response_connections = local_ingestor.post_db_connections()
-    print('RESPONSE CONNECTIONS API: ', response_connections)
+    print('RESPONSE CONNECTIONS API: ', json.dumps(response_connections, indent=4))
