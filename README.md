@@ -1,5 +1,8 @@
-# splunk-cribl-utilities
+# CriblUtilities
 A Python CLI package for migrating Splunk configurations to Cribl and validating the naming conventions of files in the Cribl configuration folder.
+
+## Other packages
+[PyPI](https://pypi.org/project/cribl-utilities/)
 
 ## Functionality
 - Setup Cribl environment variables
