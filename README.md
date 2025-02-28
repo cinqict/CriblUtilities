@@ -1,8 +1,8 @@
-# CriblUtilities
+# 🚀 CriblUtilities
 CriblUtilities is a Python CLI package that streamlines migration to Cribl Stream and validates configurations. With minimal setup, it transfers configurations from existing tools to Cribl Stream. It also integrates with Cribl GitOps workflows to verify naming conventions and file formats before implementing changes.
 
 
-## Functionality
+## 🫶 Functionality
 | **Function** | **Explanation**                       |
 |--------------|---------------------------------------|
 | Setup        | Setup your CriblUtilities environment |
@@ -12,10 +12,13 @@ CriblUtilities is a Python CLI package that streamlines migration to Cribl Strea
 
 More information on [CLI-Docs](https://github.com/cinqict/CriblUtilities/blob/main/docs/cli-docs.md) documentation.
 
-## Pre requisites migrate usecases
+## 🛠 Pre requisites migrate usecases
 - Create a local Cribl user. This user should minimally have the role: stream_editor.
 
-## Usage
+## ⚠️ Disclaimer
+This project is an independent initiative and is not affiliated, endorsed, or sponsored by Cribl. All trademarks and logos mentioned are the property of their respective owners. Please use this software responsibly and at your own risk.
+
+## 📥 Usage
 ### PyPY
 - brew install pipx
 - pipx install cribl-utilities
@@ -33,7 +36,7 @@ Link to project on [PyPI](https://pypi.org/project/cribl-utilities/).
   - `cd cribl-utilities`
   - `python example_usage_without_cli.py`
 
-## Development
+## 💪 Development
 - 'pipx install -e .'
 
 ## Compilation of a new release
