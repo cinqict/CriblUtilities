@@ -1,15 +1,18 @@
 # CriblUtilities
 CriblUtilities is a Python CLI package that streamlines migration to Cribl Stream and validates configurations. With minimal setup, it transfers configurations from existing tools to Cribl Stream. It also integrates with GitOps workflows to verify naming conventions and file formats before implementing changes.
 
-## Other packages
+## Other package options
 [PyPI](https://pypi.org/project/cribl-utilities/)
 
 ## Functionality
-- Setup Cribl environment variables
-- Convert splunk conf toml files to the format required by cribl
-- Send the converted files via the cribl API
-- Check if Cribl .yml files in cribl-config adhere to YAML linting
-- Check if Cribl .yml files in cribl-config adhere to a given regex naming convention
+| **Function** | **Explanation**                       |
+|--------------|---------------------------------------|
+| Setup        | Setup your CriblUtilities environment |
+| Migrate      | Migrate database                      |
+| Check        | Check file format adherence           |
+| Check        | Check naming convention with regex    |
+
+More information on [CLI-Docs]([https://pypi.org/project/cribl-utilities/](https://github.com/cinqict/CriblUtilities/blob/main/docs/cli-docs.md)) documentation.
 
 ## Cribl configuration 
 A local Cribl user needs to be created. This user should minimally have the role: stream_editor.
