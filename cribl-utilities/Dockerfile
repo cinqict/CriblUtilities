@@ -9,3 +9,4 @@ RUN pip install --upgrade pip pipx && \
 ENV PATH="/root/.local/bin:$PATH"
 
 ENTRYPOINT ["cribl-utilities"]
+#test
