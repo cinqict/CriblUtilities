@@ -14,6 +14,7 @@ requests = "^2.32.4"
 tomli = "^2.2.1"
 typer = "^0.15.1"
 yamllint = "^1.35.1"
+urllib3 = ">=2.5.0,<2.6.0"
 
 [tool.poetry.scripts]
 cribl-utilities = "cribl_utilities.main:app"

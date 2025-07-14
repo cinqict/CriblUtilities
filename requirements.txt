@@ -1,9 +1,10 @@
 mkdocs
 pytest~=8.3.4
 tomli~=2.2.1
-typer~=0.14.0
+typer~=0.15.2
 pydantic~=2.10.4
 requests~=2.32.4
 python-dotenv~=1.0.1
 PyYAML~=6.0.2
 yamllint~=1.35.1
+urllib3>=2.5.0,<2.6.0
