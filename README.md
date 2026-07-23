@@ -1,81 +1,130 @@
 # 🚀 CriblUtilities
+
 CriblUtilities is a Python CLI package that streamlines migration to Cribl Stream and validates configurations. With minimal setup, it transfers configurations from existing tools to Cribl Stream. It also integrates with Cribl GitOps workflows to verify naming conventions and file formats before implementing changes.
 
+**Contents:** [Functionality](#-functionality) · [Disclaimer](#-disclaimer) · [Usage](#-usage) · [Prerequisites](#-prerequisites) · [Development](#-development) · [Releasing](#-releasing)
 
 ## 🫶 Functionality
-| **Function** | **Explanation**                       |
-|--------------|---------------------------------------|
-| Setup        | Setup your CriblUtilities environment |
-| Migrate      | Migrate database                      |
-| Check        | Check file format adherence           |
-| Check        | Check naming convention with regex    |
 
-More information on [CLI-Docs](https://github.com/cinqict/CriblUtilities/blob/main/docs/cli-docs.md) documentation.
+| **Command** | **Explanation**                       |
+|-------------|----------------------------------------|
+| `setup`     | Set up your CriblUtilities environment |
+| `migrate`   | Migrate database                       |
+| `check`     | Check file format adherence            |
+| `check`     | Check naming convention with regex     |
 
-## 🛠 Pre requisites migrate use cases
-- Create a local Cribl user. This user should minimally have the role: stream_editor.
+See the full [CLI docs](https://github.com/cinqict/CriblUtilities/blob/main/docs/cli-docs.md) for every command and option.
 
 ## ⚠️ Disclaimer
+
 This project is an independent initiative and is not affiliated, endorsed, or sponsored by Cribl. All trademarks and logos mentioned are the property of their respective owners. Please use this software responsibly and at your own risk.
 
 ## 📥 Usage
-### PyPY
-- brew install pipx
-- pipx install cribl-utilities
-- cribl-utilities --help
-Link to package on [PyPI](https://pypi.org/project/cribl-utilities/).
+
+Install the CLI from PyPI:
+
+```shell
+brew install pipx
+pipx install cribl-utilities
+cribl-utilities --help
+```
+
+Package page: [PyPI](https://pypi.org/project/cribl-utilities/).
+
+## 🛠 Prerequisites
+
+- A local Cribl user with, at minimum, the `stream_editor` role — required for the migrate use cases.
 
 ## 💪 Development
-- cd cribl-utilities
-- 'pipx install -e .'
 
-### Run example usage without installing the package
-- Make sure to have installed a python version >=3.13, and have docker installed.
-- `pip install -r requirements.txt`
-- Example code without cli:
-  - `cd cribl-utilities`
-  - `docker compose up -d`
-     - login and update admin password (default is `admin` and `admin`)
-  - `python example_usage_without_cli.py`
-  - Cleanup: `docker compose down`
+### Requirements
 
-### To serve the docs
-- `mkdocs serve`
+- Python **>=3.13**
+- Docker
+- [pipx](https://pipx.pypa.io/) and [Poetry](https://python-poetry.org/)
 
-### To run unit tests
-- `docker compose up -d`
-- `pip install -r requirements.txt`
-- `cd cribl-utilities`
-- `pytest`
-- Cleanup: `docker compose down`
+### Install the CLI toolchain
 
-### Typer (cli) related
-##### Unix (macOS, Linux)
-- `brew install pipx`
-- `sudo pipx ensurepath --global` (this is to allow --global options)
-- `pipx install poetry`
-- `poetry config virtualenvs.in-project true` (this makes all venvs in the project)
-##### Windows
--  Open PowerShell as administrator
-- `pip install pipx`
-- `pipx ensurepath` 
--  Close PowerShell and open a new one
-- `pipx install poetry`
-- `poetry config virtualenvs.in-project true` (this makes all venvs in the project)
+<details>
+<summary>macOS / Linux</summary>
 
-### cribl-utilities CLI
-- `poetry new cribl-utilities`
-- `cd cribl-utilities`
-- `poetry add typer`
-- `poetry shell`
-- `poetry build`
-- `poetry install`
-- `typer cribl_utilities.main utils docs --output docs/cli-docs.md --name cribl-utilities`
+```shell
+brew install pipx
+sudo pipx ensurepath --global  # allows the --global option below
+pipx install poetry
+poetry config virtualenvs.in-project true  # keep venvs inside the project
+```
+</details>
 
-## 💻 Compilation of a new release
-### Build and publish CLI
-- make sure to have pipx and poetry installed and to be in the folder of the CLI itself
-- `poetry shell`
-- `poetry build`
-- `poetry config http-basic.pypi <username> <password>` (run once)
-- `poetry publish --build`
+<details>
+<summary>Windows (PowerShell, run as administrator)</summary>
+
+```powershell
+pip install pipx
+pipx ensurepath
+# close and reopen PowerShell
+pipx install poetry
+poetry config virtualenvs.in-project true  # keep venvs inside the project
+```
+</details>
+
+### Work on the CLI package
+
+```shell
+cd cribl-utilities
+pipx install -e .
+```
+
+### Run the example script without installing the CLI
+
+```shell
+pip install -r requirements.txt
+cd cribl-utilities
+docker compose up -d
+# log in and update the admin password (default is admin / admin)
+python example_usage_without_cli.py
+docker compose down  # cleanup
+```
+
+### Run the unit tests
+
+```shell
+docker compose up -d
+pip install -r requirements.txt
+cd cribl-utilities
+pytest
+docker compose down  # cleanup
+```
+
+### Serve the docs locally
+
+```shell
+mkdocs serve
+```
+
+<details>
+<summary>Reference: how the CLI project was originally scaffolded</summary>
+
+These commands are not needed for day-to-day development — they document how the `cribl-utilities` Poetry/Typer project was first created.
+
+```shell
+poetry new cribl-utilities
+cd cribl-utilities
+poetry add typer
+poetry shell
+poetry build
+poetry install
+typer cribl_utilities.main utils docs --output docs/cli-docs.md --name cribl-utilities
+```
+</details>
+
+## 💻 Releasing
+
+Build and publish a new CLI release from the `cribl-utilities` folder:
+
+```shell
+poetry shell
+poetry build
+poetry config http-basic.pypi <username> <password>  # run once
+poetry publish --build
+```
