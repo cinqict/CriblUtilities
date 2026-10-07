@@ -58,6 +58,40 @@ from cribl_utilities.schemas import (
 )
 
 
+def load_conf_file(file_path: str) -> dict:
+    """
+    Load and parse a single Splunk .conf file as TOML, returning the contents as a dictionary.
+
+    Parameters
+    ----------
+    file_path : str
+        The path to the .conf file.
+
+    Returns
+    -------
+    dict
+        A dictionary with the parsed data from the file.
+    """
+    file_name = os.path.basename(file_path)
+    folder_path = os.path.dirname(file_path)
+    folder_name = os.path.basename(folder_path)
+    if not os.path.exists(folder_path):
+        raise NotADirectoryError(
+            f"Folder not found: {folder_name}. Make sure the folder '{folder_name}' exists."
+        )
+    elif not os.path.exists(file_path):
+        raise FileNotFoundError(f"File not found: {file_name}. "
+                                f"Make sure {file_name} exists and it is in {folder_name} folder.")
+
+    with open(file_path) as f:
+        tmp = f.read()
+        tmp = re.sub(r"\\\n", " ", tmp)
+        tmp_formatted = re.sub(r"(\s*=\s*)(.*)", r"\1'''\2'''", tmp)
+        tomli_db_inputs = dict(tomli.loads(tmp_formatted).items())
+
+    return tomli_db_inputs
+
+
 def load_examples(files: List[str]) -> tuple[dict, dict]:
     """
     Load and parse two TOML files, returning the contents as dictionaries.
@@ -72,32 +106,25 @@ def load_examples(files: List[str]) -> tuple[dict, dict]:
     dict
         A tuple containing two dictionaries with the parsed data from each TOML file.
     """
+    return load_conf_file(files[0]), load_conf_file(files[1])
 
-    def load_and_format(file_path: str) -> dict:
-        file_name = os.path.basename(file_path)
-        folder_path = os.path.dirname(file_path)
-        folder_name = os.path.basename(folder_path)
-        if not os.path.exists(folder_path):
-            raise NotADirectoryError(
-                f"Folder not found: {folder_name}. Make sure the folder '{folder_name}' exists."
-            )
-        elif not os.path.exists(file_path):
-            raise FileNotFoundError(f"File not found: {file_name}. "
-                                    f"Make sure {file_name} exists and it is in {folder_name} folder.")
 
-        with open(file_path) as f:
-            tmp = f.read()
-            tmp = re.sub(r"\\\n", " ", tmp)
-            tmp_formatted = re.sub(r"(\s*=\s*)(.*)", r"\1'''\2'''", tmp)
-            tomli_db_inputs = dict(tomli.loads(tmp_formatted).items())
+def splunk_disabled_to_enabled(value) -> bool:
+    """
+    Translate Splunk's "disabled" setting to Cribl's "schedule.enabled" setting.
 
-        return tomli_db_inputs
-
-    # Load and parse each file
-    dict_items1 = load_and_format(files[0])
-    dict_items2 = load_and_format(files[1])
-
-    return dict_items1, dict_items2
+    disabled = true / 1 -> enabled = False
+    disabled = false / 0 -> enabled = True
+    A missing value is treated as Splunk's default (disabled = 0).
+    """
+    if value is None:
+        return True
+    normalized = str(value).strip().lower()
+    if normalized in ["true", "1"]:
+        return False
+    if normalized in ["false", "0", ""]:
+        return True
+    raise ValueError(f"Invalid value for 'disabled': {value!r}. Expected true, false, 1 or 0.")
 
 
 def is_cron_format(value: str) -> bool:
@@ -193,6 +220,8 @@ class Ingestor:
             connection_key = input_value.get("connection")
             connection_data = dict_db_connections.get(connection_key, {})
             merged_data[key] = {**input_value, **connection_data}
+            # The connection's "disabled" must not override the input's own "disabled" setting
+            merged_data[key]["disabled"] = input_value.get("disabled")
 
         def transform_disabled_values(data: dict):
             """
@@ -200,17 +229,8 @@ class Ingestor:
             """
             schedule_enable = os.getenv("SCHEDULE_ENABLED", "true").lower() in ["true", "1", "yes"]
             for trans_key, trans_sub_dict in data.items():
-                if "disabled" in trans_sub_dict:
-                    if not schedule_enable:
-                        trans_sub_dict["disabled"] = False
-                    else:
-                        value = trans_sub_dict["disabled"]
-                        if isinstance(value, str):
-                            value = value.lower()
-                        if value in ["true", 1, True, "1"]:
-                            trans_sub_dict["disabled"] = False
-                        elif value in ["false", 0, False, "0"]:
-                            trans_sub_dict["disabled"] = True
+                enabled = splunk_disabled_to_enabled(trans_sub_dict.get("disabled"))
+                trans_sub_dict["disabled"] = enabled and schedule_enable
 
             return data
 
@@ -347,6 +367,9 @@ class Ingestor:
     def merge_examples_connections(self, file_names: list | None = None) -> dict:
         """
         Merge the examples files containing the identities and connections data.
+        The identities file is optional, because Splunk DB Connect does not create one when the
+        username and password are part of the connection string.
+
         Parameters
         ----------
         file_names : list
@@ -367,9 +390,8 @@ class Ingestor:
         else:
             path2 = f"{self.examples_folder}/db_connections.conf"
 
-        paths = [path1, path2]
-
-        tomli_db_identities, tomli_db_connections = load_examples(files=paths)
+        tomli_db_connections = load_conf_file(path2)
+        tomli_db_identities = load_conf_file(path1) if os.path.exists(path1) else {}
 
         merged_data = {}
         dict_db_identities = dict(tomli_db_identities)
@@ -405,8 +427,8 @@ class Ingestor:
                         "authentication": {
                             "type": "ntlm",
                             "options": {
-                                "userName": conn_sub_dict["username"],
-                                "password": conn_sub_dict["password"],
+                                "userName": conn_sub_dict.get("username", ""),
+                                "password": conn_sub_dict.get("password", ""),
                                 "domain": conn_sub_dict.get("domain_name", ""),
                             },
                         },

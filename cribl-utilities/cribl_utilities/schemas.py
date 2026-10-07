@@ -82,12 +82,12 @@ class ConnectionSchema(BaseModel):
 
     id: Optional[str]
     databaseType: Optional[str]
-    username: str
-    password: str
+    username: Optional[str] = None
+    password: Optional[str] = None
     database: str
     disabled: int
     host: str
-    identity: str
+    identity: Optional[str] = None
     jdbcUseSSL: bool
     connectionString: Optional[str] = Field(default=None, json_schema_extra={"exclude_none": True})
     configObj: Optional[dict] = Field(default=None, json_schema_extra={"exclude_none": True})

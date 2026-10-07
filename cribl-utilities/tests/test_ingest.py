@@ -4,7 +4,8 @@ import pytest
 import json
 from unittest.mock import patch, Mock
 import requests
-from cribl_utilities.ingest import Ingestor
+import shutil
+from cribl_utilities.ingest import Ingestor, splunk_disabled_to_enabled
 
 
 @pytest.fixture
@@ -101,6 +102,37 @@ def test_get_cribl_authtoken(ingestor):
     # assert ingestor.token is not None
     # assert isinstance(ingestor.token, str)
     # assert len(ingestor.token) > 0
+
+@pytest.mark.parametrize("value, expected", [
+    ("true", False), ("True", False), ("1", False), (1, False), (True, False),
+    ("false", True), ("0", True), (0, True), (False, True), (None, True),
+])
+def test_splunk_disabled_to_enabled(value, expected):
+    assert splunk_disabled_to_enabled(value) is expected
+
+
+def test_disabled_input_creates_disabled_schedule(tmp_path, monkeypatch):
+    monkeypatch.setenv("SCHEDULE_ENABLED", "true")
+    monkeypatch.delenv("DBCOLL_PREFIX", raising=False)
+    monkeypatch.delenv("DBCOLL_SUFFIX", raising=False)
+    shutil.copytree("examples", tmp_path, dirs_exist_ok=True)
+    inputs_file = tmp_path / "db_inputs.conf"
+    inputs_file.write_text(inputs_file.read_text().replace("disabled = 0", "disabled = 1", 1))
+
+    inputs = {i.id: i.schedule.enabled for i in Ingestor(examples_folder=str(tmp_path)).load_input()}
+
+    assert inputs["assignmentgroups"] is False
+    assert inputs["CI_relations"] is True
+
+
+def test_load_connections_without_identities(tmp_path):
+    shutil.copy("examples/db_connections.conf", tmp_path)
+
+    connections = Ingestor(examples_folder=str(tmp_path)).load_connections()
+
+    assert len(connections) > 0
+    assert all(c.username is None and c.password is None for c in connections)
+
 
 # LOAD DATA TEST: names, toml validation
 # MERGE INPUT DATA TEST: Fields and value type. Missing fields, which ones can be missing which ones are required.
