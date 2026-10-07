@@ -7,4 +7,4 @@ requests~=2.33.0
 python-dotenv~=1.2.2
 PyYAML~=6.0.2
 yamllint~=1.35.1
-urllib3>=2.7.0,<3.0.0
+urllib3>=2.8.0,<3.0.0
