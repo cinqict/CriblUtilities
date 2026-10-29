@@ -1,9 +1,9 @@
 [tool.poetry]
 name = "cribl-utilities"
-version = "2.0.7"
+version = "2.0.8"
 description = "A comprehensive tool to streamline migrations and validate configurations."
 authors = ["CINQ ICT <info@cinqict.nl>"]
-readme = "README.md"
+readme = "PYPI.md"
 
 [tool.poetry.dependencies]
 click = "8.1.0"
